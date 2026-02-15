@@ -1,0 +1,66 @@
+[
+  {
+    "id": 1,
+    "date": "2026-02-01",
+    "description": "Monthly Salary",
+    "amount": 10000000,
+    "category": "Salary",
+    "type": "income"
+  },
+  {
+    "id": 2,
+    "date": "2026-02-02",
+    "description": "Monthly Rent",
+    "amount": 3000000,
+    "category": "Rent",
+    "type": "expense"
+  },
+  {
+    "id": 3,
+    "date": "2026-02-05",
+    "description": "Grocery Shopping",
+    "amount": 750000,
+    "category": "Groceries",
+    "type": "expense"
+  },
+  {
+    "id": 4,
+    "date": "2026-02-08",
+    "description": "Lunch",
+    "amount": 25000,
+    "category": "Food",
+    "type": "expense"
+  },
+  {
+    "id": 5,
+    "date": "2026-02-10",
+    "description": "Electricity Bill",
+    "amount": 400000,
+    "category": "Utilities",
+    "type": "expense"
+  },
+  {
+    "id": 6,
+    "date": "2026-02-12",
+    "description": "Internet Subscription",
+    "amount": 350000,
+    "category": "Utilities",
+    "type": "expense"
+  },
+  {
+    "id": 7,
+    "date": "2026-02-13",
+    "description": "Coffee Meeting",
+    "amount": 45000,
+    "category": "Food",
+    "type": "expense"
+  },
+  {
+    "id": 8,
+    "date": "2026-02-14",
+    "description": "Freelance Project",
+    "amount": 2500000,
+    "category": "Income",
+    "type": "income"
+  }
+]
