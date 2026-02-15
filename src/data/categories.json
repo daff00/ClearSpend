@@ -1,0 +1,11 @@
+[
+  { "id": 1, "name": "Salary" },
+  { "id": 2, "name": "Rent" },
+  { "id": 3, "name": "Groceries" },
+  { "id": 4, "name": "Food" },
+  { "id": 5, "name": "Utilities" },
+  { "id": 6, "name": "Transport" },
+  { "id": 7, "name": "Entertainment" },
+  { "id": 8, "name": "Healthcare" },
+  { "id": 9, "name": "Income" }
+]
