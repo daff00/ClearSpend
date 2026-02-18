@@ -1,8 +1,6 @@
 // ============================================================
 // FILE INI: Redux Slice untuk mengelola STATE TRANSAKSI
 // ============================================================
-// PERSON: Person 3 (Transactions Page)
-// POIN: Redux (4pts) + Redux Thunk (5pts) = 9 POIN!
 //
 // APA ITU REDUX SLICE?
 // - Slice = potongan kecil dari Redux store
@@ -27,95 +25,79 @@ import transactionsData from "../data/transactions.json";
 // STEP 2: Buat Redux Thunk untuk FETCH DATA (5 POIN!)
 // Redux Thunk = fungsi async untuk ambil data dari API/JSON
 // Mengapa perlu? Karena Redux tidak bisa langsung handle async operation
-
-// 💡 TODO: Ketik manual code dibawah ini:
-/*
 export const fetchTransactions = createAsyncThunk(
-  "transactions/fetchTransactions",  // <- Nama action (harus unik)
+  "transactions/fetchTransactions",
   async () => {
     // Simulasi API call dengan delay
     return new Promise((resolve) => {
       setTimeout(() => {
-        resolve(transactionsData);  // <- Return data transactions
-      }, 500);
-    });
+        resolve(transactionsData);
+      }, 1000);
+    })
   }
-);
-*/
+)
 
 // STEP 3: Buat Slice dengan createSlice (4 POIN Redux!)
 // Slice = state + reducers dalam 1 object
-
-// 💡 TODO: Ketik manual code dibawah ini:
-/*
 const transactionSlice = createSlice({
-  name: "transactions",  // <- Nama slice (untuk Redux DevTools)
-  
-  // INITIAL STATE: Struktur data awal
+  name: "transactions",
+
+  // Initial State, data awal saat app pertama kali load
   initialState: {
-    items: [],           // <- Array untuk menyimpan transaksi
-    status: "idle",      // <- Status fetch: 'idle' | 'loading' | 'succeeded' | 'failed'
-    error: null,         // <- Error message jika fetch gagal
+    items: [],
+    status: 'idle',
+    error: null,
   },
-  
-  // REDUCERS: Fungsi untuk UPDATE STATE (synchronous)
-  // Setiap reducer akan jadi action yang bisa di-dispatch
+
+  // Reducers untuk update state (synchronous)
   reducers: {
-    
-    // Action 1: ADD TRANSACTION
+    // Action 1: Add Transaction
     addTransaction: (state, action) => {
       state.items.push({
-        ...action.payload,   // <- Data transaction dari form
-        id: Date.now(),      // <- Generate ID unik
+        ...action.payload,
+        id: Date.now(),
       });
     },
-    
-    // Action 2: UPDATE TRANSACTION
+
+    // Action 2: Update Transaction
     updateTransaction: (state, action) => {
-      const index = state.items.findIndex((t) => t.id === action.payload.id);
+      const index = state.items.findIndex((t) => t.id ===action.payload.id);
       if (index !== -1) {
-        state.items[index] = action.payload;  // <- Replace dengan data baru
+        state.items[index] = action.payload; // replace dengan data baru
       }
     },
-    
-    // Action 3: DELETE TRANSACTION
+
+    // Action 3: Delete Transaction
     deleteTransaction: (state, action) => {
       state.items = state.items.filter((t) => t.id !== action.payload);
-      // Filter out transaction dengan id yang dihapus
     },
   },
-  
-  // EXTRA REDUCERS: Handle async actions dari Thunk
+
+  // Extra reducers: Handle Async actions dari Thunk
   extraReducers: (builder) => {
     builder
-      // Saat fetch dimulai (loading)
+      // Saat fetchTransactions PENDING (loading)
       .addCase(fetchTransactions.pending, (state) => {
         state.status = "loading";
       })
-      // Saat fetch berhasil
+      // Saat fetchTransactions FULFILLED (berhasil)
       .addCase(fetchTransactions.fulfilled, (state, action) => {
         state.status = "succeeded";
-        state.items = action.payload;  // <- Isi items dengan data dari JSON
+        state.items = action.payload;
       })
-      // Saat fetch gagal
+      // Saat fetchTransactions REJECTED (gagal)
       .addCase(fetchTransactions.rejected, (state, action) => {
         state.status = "failed";
         state.error = action.error.message;
       });
   },
 });
-*/
 
 // STEP 4: Export actions dan reducer
 // Actions = fungsi yang bisa di-dispatch dari component
 // Reducer = function untuk daftar ke store
-
-// 💡 TODO: Ketik manual 2 baris dibawah ini:
-/*
-export const { addTransaction, updateTransaction, deleteTransaction } =
-  transactionSlice.actions;
+export const { addTransaction, updateTransaction, deleteTransaction } = transactionSlice.actions;
 export default transactionSlice.reducer;
-*/
 
 // ============================================================
 // CARA MENGGUNAKAN DI COMPONENT:
