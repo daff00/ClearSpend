@@ -1,176 +1,162 @@
 // FILE INI: Transactions Page - CRUD transaksi dengan tabel
 // PERSON: Person 3
-// CARA ISI: Implementasi useState + useEffect + Redux (lihat IMPLEMENTATION_GUIDE.md)
-// Import Libraries
+
 import { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchTransactions, addTransaction, updateTransaction, deleteTransaction } from '../store/transactionSlice';
+import { fetchCategories } from '../store/categorySlice'; 
+
+import TransactionTable from "../components/TransactionTable";
+import TransactionForm from "../components/TransactionForm";
 
 function TransactionsPage() {
-  // Setup Redux Hook
   const dispatch = useDispatch();
+  
   const transactions = useSelector((state) => state.transactions.items);
-  const status = useSelector((state) => state.transactions.status)
+  const transactionStatus = useSelector((state) => state.transactions.status);
+  const { items: categories, status: catStatus } = useSelector((state) => state.categories);
 
-  // TODO: Setup useState untuk local state (3 POIN!)
   const [searchTerm, setSearchTerm] = useState('');
   const [filterCategory, setFilterCategory] = useState('All');
   const [showModal, setShowModal] = useState(false);
   const [editingTransaction, setEditingTransaction] = useState(null);
 
-  // Setup useEffect untuk fetch data (3 POIN!)
+  // [TAMBAHAN]: State untuk modal konfirmasi hapus kustom
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [idToDelete, setIdToDelete] = useState(null);
+
   useEffect(() => {
-    if (status === 'idle') {
+    if (transactionStatus === 'idle') {
       dispatch(fetchTransactions());
     }
-  }, [status, dispatch]);
+    if (catStatus === 'idle') {
+      dispatch(fetchCategories());
+    }
+  }, [transactionStatus, catStatus, dispatch]);
 
-  // Handle CRUD Operations
-  const handleAdd = (formData) => {
-    dispatch(
-      addTransaction(formData));
-  }
+  const handleSave = (formData) => {
+    if (formData.id) {
+      dispatch(updateTransaction(formData));
+    } else {
+      dispatch(addTransaction(formData));
+    }
+    setShowModal(false);
+    setEditingTransaction(null);
+  };
 
-  const handleUpdate = (id, newData) => {
-    dispatch(
-      updateTransaction({ 
-        id: id, 
-        ...newData,
-       }),
-    );
-  }
+  const handleEdit = (transaction) => {
+    setEditingTransaction(transaction);
+    setShowModal(true);
+  };
 
-  const handleDelete = (id) => {
-    dispatch(deleteTransaction(id));
-  }
+  // [MODIFIKASI]: Mengganti alert confirm dengan modal kustom
+  const handleDeleteClick = (id) => {
+    setIdToDelete(id);
+    setShowDeleteModal(true);
+  };
 
-  // Filter transactions
-  const filteredTransactions = transactions.filter((t) => {
-    const matchSearch = t.description
-      .toLowerCase()
-      .includes(searchTerm.toLowerCase());
-    const matchCategory = filterCategory === "" || t.category === filterCategory;
-    return matchSearch && matchCategory;
-  })
+  const confirmDelete = () => {
+    if (idToDelete) {
+      dispatch(deleteTransaction(idToDelete));
+      setShowDeleteModal(false);
+      setIdToDelete(null);
+    }
+  };
+
+  // Logika Filter & Sorting
+  const filteredAndSortedTransactions = transactions
+    .filter((t) => {
+      const matchSearch = t.description.toLowerCase().includes(searchTerm.toLowerCase());
+      const matchCategory = filterCategory === "All" || t.category === filterCategory;
+      return matchSearch && matchCategory;
+    })
+    // [TAMBAHAN]: Logic sorting dari tanggal terbaru ke terlama
+    .sort((a, b) => new Date(b.date) - new Date(a.date));
 
   return (
     <div className="max-w-7xl mx-auto p-6">
-      {/* ===================  HEADER & ADD BUTTON =================== */}
+      {/* HEADER */}
       <section className="border border-black p-4 mb-6">
         <div className="flex justify-between items-center">
           <h1 className="text-3xl font-bold">Transactions</h1>
-          <div className="border border-gray-400 p-2">
-            <button className="border border-black px-4 py-2 hover:bg-gray-100">
-              + Add Transaction
-            </button>
-            <p className="text-xs text-gray-400 mt-1">[ Tombol buka modal ]</p>
-          </div>
+          <button 
+            onClick={() => { setEditingTransaction(null); setShowModal(true); }}
+            className="border border-black px-4 py-2 hover:bg-gray-100 bg-white"
+          >
+            + Add Transaction
+          </button>
         </div>
       </section>
 
-      {/* ===================  SEARCH & FILTER =================== */}
+      {/* SEARCH & FILTER */}
       <section className="border border-black p-4 mb-6">
-        <h3 className="font-bold mb-3 border-b border-gray-300 pb-2">
-          [ SEARCH & FILTER SECTION ]
-        </h3>
         <div className="flex gap-4">
-          <div className="border border-gray-400 p-3 flex-1">
-            <input
-              type="text"
-              placeholder="Search transactions..."
-              className="w-full border border-gray-300 p-2"
-            />
-            <p className="text-xs text-gray-400 mt-1">
-              [ Search dengan useState ]
-            </p>
-          </div>
+          <input
+            type="text"
+            placeholder="Search transactions..."
+            className="w-full border border-gray-300 p-2"
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+          />
 
-          <div className="border border-gray-400 p-3">
-            <select className="border border-gray-300 p-2">
-              <option>All Categories</option>
-              <option>Food</option>
-              <option>Rent</option>
-              <option>Salary</option>
-            </select>
-            <p className="text-xs text-gray-400 mt-1">
-              [ Filter dengan useState ]
-            </p>
-          </div>
+          <select 
+            className="border border-gray-300 p-2"
+            value={filterCategory}
+            onChange={(e) => setFilterCategory(e.target.value)}
+          >
+            <option value="All">All Categories</option>
+            {categories.map((cat) => (
+              <option key={cat.id} value={cat.name}>{cat.name}</option>
+            ))}
+          </select>
         </div>
-        <p className="text-xs text-gray-400 mt-4 pt-4 border-t border-gray-200">
-          💡 TODO: Implementasi search & filter dengan useState + filter array
-        </p>
       </section>
 
-      {/* ===================  TRANSACTIONS TABLE =================== */}
+      {/* TABLE */}
       <section className="border border-black p-4">
-        <h3 className="font-bold mb-4 border-b border-gray-300 pb-2">
-          [ TRANSACTIONS TABLE ]
-        </h3>
-
-        <div className="border border-gray-400">
-          <table className="w-full">
-            <thead className="bg-gray-100">
-              <tr>
-                <th className="p-2 text-left border-b border-gray-400">Date</th>
-                <th className="p-2 text-left border-b border-gray-400">
-                  Description
-                </th>
-                <th className="p-2 text-left border-b border-gray-400">
-                  Amount
-                </th>
-                <th className="p-2 text-left border-b border-gray-400">
-                  Category
-                </th>
-                <th className="p-2 text-left border-b border-gray-400">
-                  Actions
-                </th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr className="border-b border-gray-300">
-                <td className="p-2">2026-02-15</td>
-                <td className="p-2">Sample Transaction</td>
-                <td className="p-2">Rp 100.000</td>
-                <td className="p-2">Food</td>
-                <td className="p-2">
-                  <button className="text-sm hover:underline mr-2">Edit</button>
-                  <button className="text-sm hover:underline">Delete</button>
-                </td>
-              </tr>
-              <tr className="bg-gray-50">
-                <td colSpan="5" className="p-4 text-center text-gray-500">
-                  [ Data dari Redux transactions.map() ]
-                </td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-
-        <p className="text-xs text-gray-400 mt-4 pt-4 border-t border-gray-200">
-          💡 TODO: Map data dari Redux, implementasi Edit & Delete dengan
-          dispatch actions
-        </p>
+        <TransactionTable 
+          transactions={filteredAndSortedTransactions} 
+          onEdit={handleEdit} 
+          onDelete={handleDeleteClick} 
+        />
       </section>
 
-      {/* MODAL PLACEHOLDER */}
-      <div className="mt-6 border border-black p-4 bg-gray-50">
-        <h3 className="text-xl font-bold mb-2">[ MODAL ADD/EDIT ]</h3>
-        <p className="text-gray-600 text-sm">
-          Modal akan muncul dengan useState (showModal)
-        </p>
-        <p className="text-xs text-gray-400 mt-2">
-          Form fields: type, description, amount, date, category
-        </p>
-      </div>
+      {/* MODAL TRANSACTION */}
+      {/* [MODIFIKASI]: Penambahan 'key' agar form mereset otomatis saat ganti transaksi yang diedit (Fix Bug) */}
+      <TransactionForm 
+        key={editingTransaction?.id || 'new-transaction'}
+        isOpen={showModal}
+        onClose={() => { setShowModal(false); setEditingTransaction(null); }}
+        onSave={handleSave}
+        editingTransaction={editingTransaction}
+        categories={categories}
+      />
 
-      {/* FOOTER INFO */}
-      <div className="text-center text-sm text-gray-500 mt-8 p-4 border border-gray-300">
-        📄 TRANSACTIONS PAGE - Dikerjakan oleh <strong>Person 3</strong>
-        <br />
-        Poin: Redux (4) + Redux Thunk (5) + useState (3) + useEffect (3) + 1
-        page (3) = <strong>18pts!</strong>
-      </div>
+      {/* [TAMBAHAN]: Modal Konfirmasi Hapus Kustom */}
+      {showDeleteModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-[60]">
+          <div className="bg-white p-6 rounded-lg max-w-sm w-full mx-4 border-2 border-red-500">
+            <h3 className="text-xl font-bold mb-2">Hapus Transaksi?</h3>
+            <p className="text-gray-600 mb-6">
+              Tindakan ini tidak dapat dibatalkan. Transaksi akan dihapus permanen.
+            </p>
+            <div className="flex gap-3">
+              <button 
+                onClick={() => setShowDeleteModal(false)}
+                className="flex-1 px-4 py-2 border border-gray-300 rounded hover:bg-gray-100"
+              >
+                Batal
+              </button>
+              <button 
+                onClick={confirmDelete}
+                className="flex-1 px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700 font-bold"
+              >
+                Hapus
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
