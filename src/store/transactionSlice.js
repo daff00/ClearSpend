@@ -21,6 +21,8 @@
 // 💡 TODO: Ketik manual 2 baris dibawah ini:
 // import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 // import transactionsData from "../data/transactions.json";
+import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
+import transactionsData from "../data/transactions.json";
 
 // STEP 2: Buat Redux Thunk untuk FETCH DATA (5 POIN!)
 // Redux Thunk = fungsi async untuk ambil data dari API/JSON
