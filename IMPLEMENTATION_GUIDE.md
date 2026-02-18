@@ -104,10 +104,10 @@ function Navbar() {
               Categories
             </Link>
             <Link
-              to="/about"
-              className="text-sm font-medium hover:underline hover:text-green-600"
+              to=\"/faq\"
+              className=\"text-sm font-medium hover:underline hover:text-green-600\"
             >
-              About
+              FAQ
             </Link>
           </div>
         </div>
@@ -604,54 +604,75 @@ Ikuti langkah yang sama dengan Person 3, tapi untuk **categories**:
 
 ---
 
-## 👤 **PERSON 5: About Page**
+## 👤 **PERSON 5: FAQ Page**
 
-### **Task: Tambah Interactive Element**
+### **Task: Buat FAQ Accordion dengan useState**
+
+**📂 File:** [src/pages/FAQPage.jsx](src/pages/FAQPage.jsx)
+
+FAQ Page menampilkan **Frequently Asked Questions** dengan accordion (expand/collapse) menggunakan **useState**.
+
+#### **Konsep yang Digunakan:**
+- ✅ **useState (3 POIN!)** - Handle accordion open/close state
+- ✅ **Array Mapping** - Render multiple FAQ items
+- ✅ **Conditional Rendering** - Show/hide FAQ answer
+- ✅ **Event Handlers** - onClick untuk toggle accordion
+
+#### **Implementation:**
 
 ```jsx
-// src/pages/AboutPage.jsx
-import { useState } from "react";
+// src/pages/FAQPage.jsx
+import { useState } from 'react';
 
-function AboutPage() {
-  const [selectedMember, setSelectedMember] = useState(null);
+function FAQPage() {
+  // useState untuk handle accordion (3 POIN!)
+  const [openFAQ, setOpenFAQ] = useState(null);
 
-  const teamMembers = [
+  const toggleFAQ = (index) => {
+    setOpenFAQ(openFAQ === index ? null : index);
+  };
+
+  const faqs = [
     {
-      id: 1,
-      name: "Nama 1",
-      role: "Landing Page",
-      contribution: "Setup, routing, navbar",
+      question: "Apa itu ClearSpend?",
+      answer: "ClearSpend adalah aplikasi expense tracker..."
     },
     {
-      id: 2,
-      name: "Nama 2",
-      role: "Dashboard",
-      contribution: "Charts, visualization",
+      question: "Bagaimana cara menambahkan transaksi?",
+      answer: "Kunjungi halaman Transactions..."
     },
-    // ... dst
+    // ... more FAQs
   ];
 
   return (
-    <div className="max-w-7xl mx-auto p-6">
-      {/* ... header ... */}
+    <div className="max-w-4xl mx-auto p-6">
+      <h1>FAQ - Frequently Asked Questions</h1>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        {teamMembers.map((member) => (
-          <div
-            key={member.id}
-            onClick={() =>
-              setSelectedMember(member.id === selectedMember ? null : member.id)
-            }
-            className="border border-gray-400 p-4 cursor-pointer hover:bg-gray-50"
-          >
-            <h3 className="font-bold">{member.name}</h3>
-            <p className="text-sm text-gray-600">{member.role}</p>
+      {/* FAQ Accordion */}
+      <div className="space-y-3">
+        {faqs.map((faq, index) => (
+          <div key={index} className="border border-gray-400">
+            
+            {/* Question - Clickable */}
+            <button
+              onClick={() => toggleFAQ(index)}
+              className="w-full text-left p-4 hover:bg-gray-50 flex justify-between"
+            >
+              <span className="font-semibold">
+                {index + 1}. {faq.question}
+              </span>
+              <span className="text-2xl">
+                {openFAQ === index ? '−' : '+'}
+              </span>
+            </button>
 
-            {selectedMember === member.id && (
-              <div className="mt-3 pt-3 border-t border-gray-300">
-                <p className="text-sm">{member.contribution}</p>
+            {/* Answer - Conditional Rendering */}
+            {openFAQ === index && (
+              <div className="p-4 bg-gray-50 border-t">
+                <p>{faq.answer}</p>
               </div>
             )}
+            
           </div>
         ))}
       </div>
@@ -659,7 +680,33 @@ function AboutPage() {
   );
 }
 
-export default AboutPage;
+export default FAQPage;
+```
+
+#### **How It Works:**
+
+**1. State Management:**
+```javascript
+const [openFAQ, setOpenFAQ] = useState(null);
+// null = semua FAQ tertutup
+// number (index) = FAQ dengan index tersebut terbuka
+```
+
+**2. Toggle Logic:**
+```javascript
+const toggleFAQ = (index) => {
+  // Jika FAQ yang sama diklik, tutup (set null)
+  // Jika FAQ berbeda diklik, buka FAQ itu (set index)
+  setOpenFAQ(openFAQ === index ? null : index);
+};
+```
+
+**3. Conditional Rendering:**
+```javascript
+{openFAQ === index && (
+  <div>Answer here</div>
+)}
+// Hanya render answer jika FAQ ini terbuka
 ```
 
 **📌 Poin:** useState (3) + 1 page (3) = **6 points**
@@ -705,7 +752,7 @@ useEffect(() => {
 - [ ] Person 2: Dashboard with charts
 - [ ] Person 3: Transactions CRUD working
 - [ ] Person 4: Categories CRUD working
-- [ ] Person 5: About page with interactive elements
+- [ ] Person 5: FAQ page with accordion interactive
 - [ ] All pages responsive
 - [ ] Redux DevTools showing data
 - [ ] No console errors

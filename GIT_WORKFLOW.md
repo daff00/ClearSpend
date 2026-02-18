@@ -45,10 +45,10 @@ src/pages/CategoriesPage.jsx       ← ISI & STYLING
 src/components/CategoryForm.jsx    ← ISI & STYLING
 ```
 
-### **Person 5 - About**
+### **Person 5 - FAQ**
 
 ```
-src/pages/AboutPage.jsx  ← ISI & STYLING
+src/pages/FAQPage.jsx  ← ISI & STYLING
 ```
 
 ---
@@ -332,7 +332,7 @@ git commit -m "docs: update README with setup instructions"
    ├─ Person 2: feature/dashboard
    ├─ Person 3: feature/transactions
    ├─ Person 4: feature/categories
-   └─ Person 5: feature/about
+   └─ Person 5: feature/faq
 
 3. Kerjakan di branch masing-masing
    └─ Edit file tanggung jawab sendiri

@@ -79,7 +79,7 @@ npm run build
 | **Person 2** | Dashboard        | Charts, useEffect    | 6    |
 | **Person 3** | Transactions     | Redux + Thunk + CRUD | 18   |
 | **Person 4** | Categories       | Redux + Thunk + CRUD | 18   |
-| **Person 5** | About            | useState interactive | 6    |
+| **Person 5** | FAQ              | useState accordion   | 6    |
 
 ---
 
@@ -94,7 +94,7 @@ src/
 │   ├── Dashboard.jsx
 │   ├── TransactionsPage.jsx
 │   ├── CategoriesPage.jsx
-│   └── AboutPage.jsx
+│   └── FAQPage.jsx
 ├── components/          # Reusable components
 │   ├── Navbar.jsx
 │   ├── TransactionTable.jsx
@@ -191,7 +191,7 @@ Kalau ada pertanyaan atau stuck:
 - [ ] Dashboard dengan Chart.js
 - [ ] TransactionsPage dengan Redux CRUD
 - [ ] CategoriesPage dengan Redux CRUD
-- [ ] AboutPage dengan interactive elements
+- [ ] FAQPage dengan accordion interactive
 - [ ] Responsive design (mobile-friendly)
 - [ ] No console errors
 

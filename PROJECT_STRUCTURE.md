@@ -22,7 +22,7 @@ src/
 │   ├── Dashboard.jsx          # Person 2 - Charts & Stats
 │   ├── TransactionsPage.jsx   # Person 3 - Transaction CRUD
 │   ├── CategoriesPage.jsx     # Person 4 - Category CRUD
-│   └── AboutPage.jsx          # Person 5 - Team Credits
+│   └── FAQPage.jsx            # Person 5 - FAQ Accordion
 │
 ├── components/                 # ✅ SEMUA COMPONENTS (SUDAH DIBUAT)
 │   ├── Navbar.jsx             # Navigation bar (Person 1)
@@ -158,21 +158,21 @@ Setiap file sudah berisi:
 
 ---
 
-### **Person 5: About Page** ⏳ SIAP DIKERJAKAN
+### **Person 5: FAQ Page** ⏳ SIAP DIKERJAKAN
 
-**Status:** Skeleton ready dengan interactive onClick
+**Status:** Skeleton ready dengan accordion functionality
 
 **Files yang sudah dibuat:**
 
-- ✅ `src/pages/AboutPage.jsx` - useState for interaction
+- ✅ `src/pages/FAQPage.jsx` - useState for accordion
 
 **Yang perlu diisi:**
 
-- Isi nama asli team members & foto (ganti emoji 👤)
-- Styling member cards (gradients, shadows, animations)
-- Styling project info section
-- Test onClick untuk expand member details
-- Tambah section technologies used dengan logo/icons
+- Tambah lebih banyak FAQ items sesuai kebutuhan
+- Styling accordion (animations, transitions)
+- Styling question & answer sections
+- Test accordion expand/collapse
+- Tambah section technical info dengan details lengkap
 
 **Poin:** useState (3), 1 page (3) = **6 points**
 
@@ -196,7 +196,7 @@ Klik semua link di Navbar:
 - Dashboard → Dashboard Page ✅
 - Transactions → Transactions Page ✅
 - Categories → Categories Page ✅
-- About → About Page ✅
+- FAQ → FAQ Page ✅
 
 ### 3. **Cek Redux DevTools**
 

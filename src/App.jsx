@@ -12,7 +12,7 @@ import LandingPage from "./pages/LandingPage";
 import Dashboard from "./pages/Dashboard";
 import TransactionsPage from "./pages/TransactionsPage";
 import CategoriesPage from "./pages/CategoriesPage";
-import AboutPage from "./pages/AboutPage";
+import FAQPage from "./pages/FAQPage";
 
 function App() {
   return (
@@ -29,7 +29,7 @@ function App() {
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/transactions" element={<TransactionsPage />} />
           <Route path="/categories" element={<CategoriesPage />} />
-          <Route path="/about" element={<AboutPage />} />
+          <Route path="/faq" element={<FAQPage />} />
         </Routes>
       </div>
     </BrowserRouter>

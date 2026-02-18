@@ -34,8 +34,8 @@ function Navbar() {
             <Link to="/categories" className="text-sm hover:underline">
               Categories
             </Link>
-            <Link to="/about" className="text-sm hover:underline">
-              About
+            <Link to="/faq" className="text-sm hover:underline">
+              FAQ
             </Link>
           </div>
         </div>
