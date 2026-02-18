@@ -17,14 +17,14 @@ import { configureStore } from "@reduxjs/toolkit";
 
 // 💡 TODO: Setelah transactionSlice.js dan categorySlice.js selesai diisi,
 // uncomment 2 baris dibawah ini:
-// import transactionReducer from "./transactionSlice";
-// import categoryReducer from "./categorySlice";
+import transactionReducer from "./transactionSlice";
+import categoryReducer from "./categorySlice";
 
 export const store = configureStore({
   reducer: {
     // 💡 TODO: Setelah import reducers, uncomment 2 baris dibawah:
-    // transactions: transactionReducer,  // ← State bisa diakses pakai state.transactions
-    // categories: categoryReducer,        // ← State bisa diakses pakai state.categories
+    transactions: transactionReducer,  // ← State bisa diakses pakai state.transactions
+    categories: categoryReducer,        // ← State bisa diakses pakai state.categories
     // Sementara kosong dulu, nanti diisi setelah slice selesai dibuat
   },
 });
