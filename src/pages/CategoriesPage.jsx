@@ -23,7 +23,18 @@ import {
   deleteCategoryAsync,
   clearErrors,
 } from "../store/categorySlice";
-import CategoryForm from "../components/CategoryForm";
+import { Button } from "@/components/ui/button";
+import { Plus, Trash2, Tag, Edit } from "lucide-react";
+import { Card, CardContent } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 
 function CategoriesPage() {
   const dispatch = useDispatch();
@@ -41,6 +52,7 @@ function CategoriesPage() {
   // Local UI state
   const [showModal, setShowModal] = useState(false);
   const [editingCategory, setEditingCategory] = useState(null);
+  const [categoryName, setCategoryName] = useState("");
 
   useEffect(() => {
     if (status === "idle") {
@@ -50,44 +62,52 @@ function CategoriesPage() {
 
   const handleAdd = () => {
     setEditingCategory(null);
+    setCategoryName("");
     setShowModal(true);
   };
 
   const handleEdit = (category) => {
     setEditingCategory(category);
+    setCategoryName(category.name);
     setShowModal(true);
   };
 
   const handleDelete = async (id) => {
-    if (window.confirm("Are you sure you want to delete this category?")) {
+    if (
+      window.confirm(
+        "Hapus kategori ini? Transaksi yang sudah ada mungkin akan kehilangan referensi kategori."
+      )
+    ) {
       try {
         await dispatch(deleteCategoryAsync(id)).unwrap();
         dispatch(clearErrors());
       } catch (error) {
         console.error("Failed to delete:", error);
-        alert(`Failed to delete: ${error}`);
       }
     }
   };
 
-  const handleSave = async (categoryData) => {
+  const handleSave = async () => {
+    if (!categoryName.trim()) return;
+
     try {
-      if (categoryData.id) {
+      if (editingCategory) {
         await dispatch(
           updateCategoryAsync({
-            id: categoryData.id,
-            name: categoryData.name,
-          }),
+            id: editingCategory.id,
+            name: categoryName,
+          })
         ).unwrap();
       } else {
         await dispatch(
           addCategoryAsync({
-            name: categoryData.name,
-          }),
+            name: categoryName,
+          })
         ).unwrap();
       }
       setShowModal(false);
       setEditingCategory(null);
+      setCategoryName("");
       dispatch(clearErrors());
     } catch (error) {
       console.error("Failed to save:", error);
@@ -97,146 +117,168 @@ function CategoriesPage() {
   const handleCloseModal = () => {
     setShowModal(false);
     setEditingCategory(null);
+    setCategoryName("");
   };
 
   return (
-    <div className="max-w-7xl mx-auto p-6">
+    <div className="flex flex-col gap-8 max-w-7xl mx-auto p-6">
       {/* Header with Error Display */}
-      <section className="border-2 border-black p-6 mb-6 bg-white">
-        <div className="flex justify-between items-center mb-4">
-          <div>
-            <h1 className="text-4xl font-bold mb-2">🏷️ Categories</h1>
-            <p className="text-gray-600">Manage your expense categories</p>
-          </div>
-          <button
-            onClick={handleAdd}
-            disabled={isAdding}
-            className="border-2 border-black bg-green-600 text-white px-6 py-3 hover:bg-green-700 transition font-semibold disabled:opacity-50 disabled:cursor-not-allowed"
-          >
-            {isAdding ? "⏳ Adding..." : "+ Add Category"}
-          </button>
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-3xl font-bold tracking-tight">Categories</h1>
+          <p className="text-muted-foreground">
+            Atur kategori transaksi untuk pelaporan yang lebih baik.
+          </p>
         </div>
 
-        {(addError || updateError || deleteError) && (
-          <div className="mt-4 p-4 border-2 border-red-500 bg-red-50">
-            <p className="text-red-700 font-semibold mb-2">⚠️ Error:</p>
-            {addError && <p className="text-red-600">• Add: {addError}</p>}
-            {updateError && (
-              <p className="text-red-600">• Update: {updateError}</p>
+        <Dialog open={showModal} onOpenChange={setShowModal}>
+          <DialogTrigger asChild>
+            <Button onClick={handleAdd} disabled={isAdding}>
+              <Plus className="mr-2 h-4 w-4" />
+              {isAdding ? "Adding..." : "Add Category"}
+            </Button>
+          </DialogTrigger>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>
+                {editingCategory ? "Edit Kategori" : "Tambah Kategori Baru"}
+              </DialogTitle>
+            </DialogHeader>
+            <div className="py-4">
+              <label className="text-sm font-medium mb-2 block">
+                Nama Kategori
+              </label>
+              <Input
+                placeholder="e.g. Health, Education, Hobby"
+                value={categoryName}
+                onChange={(e) => setCategoryName(e.target.value)}
+                onKeyDown={(e) => e.key === "Enter" && handleSave()}
+              />
+            </div>
+            {(addError || updateError) && (
+              <div className="p-3 rounded-md bg-destructive/10 border border-destructive">
+                <p className="text-sm text-destructive">
+                  ⚠️ {addError || updateError}
+                </p>
+              </div>
             )}
-            {deleteError && (
-              <p className="text-red-600">• Delete: {deleteError}</p>
-            )}
-            <button
+            <DialogFooter>
+              <Button variant="outline" onClick={handleCloseModal}>
+                Batal
+              </Button>
+              <Button
+                onClick={handleSave}
+                disabled={isAdding || isUpdating || !categoryName.trim()}
+              >
+                {isAdding || isUpdating ? "Saving..." : "Simpan Kategori"}
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+      </div>
+
+      {/* Error Banner */}
+      {deleteError && (
+        <div className="p-4 rounded-lg border border-destructive bg-destructive/10">
+          <div className="flex items-start justify-between">
+            <div>
+              <p className="text-sm font-semibold text-destructive mb-1">
+                ⚠️ Error Deleting Category
+              </p>
+              <p className="text-sm text-destructive/80">{deleteError}</p>
+            </div>
+            <Button
+              variant="ghost"
+              size="sm"
               onClick={() => dispatch(clearErrors())}
-              className="mt-3 text-sm underline text-red-700 hover:text-red-900"
             >
-              Clear Errors
-            </button>
+              Clear
+            </Button>
           </div>
-        )}
-      </section>
+        </div>
+      )}
 
       {/* Loading State */}
       {status === "loading" && (
-        <div className="text-center py-12 border-2 border-black bg-white">
-          <p className="text-xl text-gray-600">⏳ Loading categories...</p>
+        <div className="text-center py-12">
+          <p className="text-xl text-muted-foreground">
+            ⏳ Loading categories...
+          </p>
         </div>
       )}
 
       {/* Error State */}
       {status === "failed" && (
-        <div className="text-center py-12 border-2 border-red-500 bg-red-50">
-          <p className="text-xl text-red-600">❌ Error loading categories</p>
+        <div className="text-center py-12 px-4 rounded-lg border border-destructive bg-destructive/10">
+          <p className="text-xl text-destructive">
+            ❌ Error loading categories
+          </p>
         </div>
       )}
 
       {/* Categories Grid */}
       {status === "succeeded" && (
-        <section className="border-2 border-black p-6 bg-white">
-          <h3 className="font-bold text-xl mb-4 border-b-2 border-gray-300 pb-3">
-            📋 Categories List ({categories.length})
-          </h3>
-
+        <div>
           {categories.length === 0 ? (
             <div className="text-center py-12">
-              <p className="text-lg text-gray-500 mb-4">No categories yet</p>
-              <button
-                onClick={handleAdd}
-                className="border-2 border-black bg-green-600 text-white px-6 py-3 hover:bg-green-700 transition font-semibold"
-              >
-                + Add Your First Category
-              </button>
+              <Tag className="h-16 w-16 text-muted-foreground mx-auto mb-4" />
+              <p className="text-lg text-muted-foreground mb-4">
+                No categories yet
+              </p>
+              <Button onClick={handleAdd}>
+                <Plus className="mr-2 h-4 w-4" />
+                Add Your First Category
+              </Button>
             </div>
           ) : (
-            <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
               {categories.map((category) => (
-                <div
-                  key={category.id}
-                  className="border-2 border-black p-5 bg-white hover:shadow-lg transition-all hover:scale-105"
-                >
-                  <div className="flex justify-between items-start mb-3">
-                    <h3 className="font-bold text-xl text-gray-800">
-                      {category.name}
-                    </h3>
-                    <div className="flex gap-2">
-                      <button
-                        onClick={() => handleEdit(category)}
-                        disabled={isUpdating || isDeleting}
-                        className="text-blue-600 hover:text-blue-800 text-xl transition disabled:opacity-30 disabled:cursor-not-allowed"
-                        title={isUpdating ? "Updating..." : "Edit"}
-                      >
-                        {isUpdating ? "⏳" : "✏️"}
-                      </button>
-                      <button
-                        onClick={() => handleDelete(category.id)}
-                        disabled={isUpdating || isDeleting}
-                        className="text-red-600 hover:text-red-800 text-xl transition disabled:opacity-30 disabled:cursor-not-allowed"
-                        title={isDeleting ? "Deleting..." : "Delete"}
-                      >
-                        {isDeleting ? "⏳" : "🗑️"}
-                      </button>
+                <Card key={category.id} className="group overflow-hidden">
+                  <CardContent className="p-6">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-4">
+                        <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center text-primary">
+                          <Tag className="h-6 w-6" />
+                        </div>
+                        <div>
+                          <h3 className="font-semibold text-lg">
+                            {category.name}
+                          </h3>
+                          <p className="text-xs text-muted-foreground">
+                            ID: {category.id}
+                          </p>
+                        </div>
+                      </div>
+                      <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className="text-muted-foreground hover:text-blue-600"
+                          onClick={() => handleEdit(category)}
+                          disabled={isUpdating || isDeleting}
+                          title="Edit"
+                        >
+                          <Edit className="h-4 w-4" />
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className="text-muted-foreground hover:text-destructive"
+                          onClick={() => handleDelete(category.id)}
+                          disabled={isUpdating || isDeleting}
+                          title="Delete"
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </Button>
+                      </div>
                     </div>
-                  </div>
-                  <div className="text-xs text-gray-500 border-t border-gray-200 pt-2">
-                    ID: {category.id}
-                  </div>
-                </div>
+                  </CardContent>
+                </Card>
               ))}
             </div>
           )}
-        </section>
+        </div>
       )}
-
-      {/* Modal Form */}
-      <CategoryForm
-        isOpen={showModal}
-        onClose={handleCloseModal}
-        onSave={handleSave}
-        editingCategory={editingCategory}
-      />
-
-      {/* Footer */}
-      <div className="text-center text-sm text-gray-600 mt-8 p-4 border-2 border-gray-300 bg-gray-50">
-        <p className="mb-2">
-          📄 <strong>CATEGORIES PAGE</strong> - Dikerjakan oleh{" "}
-          <strong>Person 4</strong>
-        </p>
-        <p className="text-xs">
-          <strong>Poin:</strong> Redux (4) + Redux Thunk (5) + useState (3) +
-          useEffect (3) + 1 page (3) ={" "}
-          <strong className="text-green-600">18 POIN!</strong>
-        </p>
-        <p className="text-xs text-gray-500 mt-2">
-          🏆 <strong>REDUX BEST PRACTICES:</strong>
-        </p>
-        <p className="text-xs text-gray-500">
-          ✅ Global State in Redux | ✅ UI State in useState | ✅ Per-operation
-          Loading States
-          <br />✅ Async Thunks | ✅ Validation in Redux | ✅ Error Handling |
-          ✅ Optimistic Updates
-        </p>
-      </div>
     </div>
   );
 }

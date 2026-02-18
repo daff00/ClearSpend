@@ -9,7 +9,7 @@
 //    - editingCategory: Object | null (category yang diedit, null = Add mode)
 // ═══════════════════════════════════════════════════════════════════════
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 /**
  * 🎨 COMPONENT: CategoryForm
@@ -30,6 +30,23 @@ function CategoryForm({ isOpen, onClose, onSave, editingCategory }) {
   // - Edit mode: ambil dari editingCategory.name
   // - Add mode: empty string
   const [categoryName, setCategoryName] = useState(editingCategory?.name || "");
+
+  // ─────────────────────────────────────────────
+  // 🔄 EFFECT: Sync state dengan editingCategory prop
+  // ─────────────────────────────────────────────
+  /**
+   * Update categoryName ketika editingCategory berubah
+   * Penting untuk memastikan form terisi dengan benar saat edit
+   */
+  useEffect(() => {
+    if (editingCategory) {
+      // Edit mode: isi dengan data category yang akan diedit
+      setCategoryName(editingCategory.name);
+    } else {
+      // Add mode: kosongkan input
+      setCategoryName("");
+    }
+  }, [editingCategory]);
 
   // ─────────────────────────────────────────────
   // 🎯 EVENT HANDLER: Submit Form
