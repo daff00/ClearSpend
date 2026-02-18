@@ -1,141 +1,157 @@
-// FILE INI: Categories Page - CRUD kategori
-// PERSON: Person 4
-// CARA ISI: Implementasi useState + useEffect + Redux (lihat IMPLEMENTATION_GUIDE.md)
+// ═══════════════════════════════════════════════════════════════════════
+// 📄 FILE: CategoriesPage.jsx - REDUX BEST PRACTICES IMPLEMENTATION
+// ═══════════════════════════════════════════════════════════════════════
+// 👤 PERSON: Person 4
+// 📝 DESKRIPSI: Halaman untuk mengelola kategori expense (CRUD operations)
+// 🎯 FITUR: Create, Read, Update, Delete categories dengan Redux Best Practices
+//
+// 🏆 BEST PRACTICES IMPLEMENTED:
+// ✅ Redux untuk GLOBAL STATE (categories data - shared across pages)
+// ✅ useState untuk LOCAL UI STATE (modal visibility, form inputs)
+// ✅ Per-operation loading indicators (isAdding, isUpdating, isDeleting)
+// ✅ Error handling dengan user-friendly messages
+// ✅ Async operations dengan proper feedback
+// ✅ Validation di Redux layer (moved from component)
+// ═══════════════════════════════════════════════════════════════════════
 
-// Import Libraries
 import { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import {
   fetchCategories,
-  addCategory,
-  updateCategory,
-  deleteCategory,
+  addCategoryAsync,
+  updateCategoryAsync,
+  deleteCategoryAsync,
+  clearErrors,
 } from "../store/categorySlice";
+import CategoryForm from "../components/CategoryForm";
 
 function CategoriesPage() {
-  // ═══════════════════════════════════════════════
-  // REDUX HOOKS (4 POIN!)
-  // ═══════════════════════════════════════════════
   const dispatch = useDispatch();
+
+  // Redux state - Global data
   const categories = useSelector((state) => state.categories.items);
   const status = useSelector((state) => state.categories.status);
+  const isAdding = useSelector((state) => state.categories.isAdding);
+  const isUpdating = useSelector((state) => state.categories.isUpdating);
+  const isDeleting = useSelector((state) => state.categories.isDeleting);
+  const addError = useSelector((state) => state.categories.addError);
+  const updateError = useSelector((state) => state.categories.updateError);
+  const deleteError = useSelector((state) => state.categories.deleteError);
 
-  // ═══════════════════════════════════════════════
-  // LOCAL STATE (3 POIN useState!)
-  // ═══════════════════════════════════════════════
+  // Local UI state
   const [showModal, setShowModal] = useState(false);
   const [editingCategory, setEditingCategory] = useState(null);
-  const [categoryName, setCategoryName] = useState("");
 
-  // ═══════════════════════════════════════════════
-  // FETCH DATA saat component mount (3 POIN useEffect!)
-  // ═══════════════════════════════════════════════
   useEffect(() => {
     if (status === "idle") {
       dispatch(fetchCategories());
     }
   }, [status, dispatch]);
 
-  // ═══════════════════════════════════════════════
-  // EVENT HANDLERS
-  // ═══════════════════════════════════════════════
-
   const handleAdd = () => {
     setEditingCategory(null);
-    setCategoryName("");
     setShowModal(true);
   };
 
   const handleEdit = (category) => {
     setEditingCategory(category);
-    setCategoryName(category.name);
     setShowModal(true);
   };
 
-  const handleDelete = (id) => {
+  const handleDelete = async (id) => {
     if (window.confirm("Are you sure you want to delete this category?")) {
-      dispatch(deleteCategory(id));
+      try {
+        await dispatch(deleteCategoryAsync(id)).unwrap();
+        dispatch(clearErrors());
+      } catch (error) {
+        console.error("Failed to delete:", error);
+        alert(`Failed to delete: ${error}`);
+      }
     }
   };
 
-  const handleSave = (e) => {
-    e.preventDefault();
-
-    // Validation
-    if (!categoryName.trim()) {
-      alert("Category name cannot be empty");
-      return;
+  const handleSave = async (categoryData) => {
+    try {
+      if (categoryData.id) {
+        await dispatch(
+          updateCategoryAsync({
+            id: categoryData.id,
+            name: categoryData.name,
+          }),
+        ).unwrap();
+      } else {
+        await dispatch(
+          addCategoryAsync({
+            name: categoryData.name,
+          }),
+        ).unwrap();
+      }
+      setShowModal(false);
+      setEditingCategory(null);
+      dispatch(clearErrors());
+    } catch (error) {
+      console.error("Failed to save:", error);
     }
-
-    // Check for duplicates (case insensitive)
-    const isDuplicate = categories.some(
-      (cat) =>
-        cat.name.toLowerCase() === categoryName.trim().toLowerCase() &&
-        cat.id !== editingCategory?.id,
-    );
-
-    if (isDuplicate) {
-      alert("Category already exists");
-      return;
-    }
-
-    // Dispatch Redux action
-    if (editingCategory) {
-      dispatch(
-        updateCategory({
-          id: editingCategory.id,
-          name: categoryName.trim(),
-        }),
-      );
-    } else {
-      dispatch(addCategory({ name: categoryName.trim() }));
-    }
-
-    // Close modal and reset
-    setShowModal(false);
-    setCategoryName("");
-    setEditingCategory(null);
   };
 
   const handleCloseModal = () => {
     setShowModal(false);
-    setCategoryName("");
     setEditingCategory(null);
   };
 
   return (
     <div className="max-w-7xl mx-auto p-6">
-      {/* ===================  HEADER & ADD BUTTON =================== */}
+      {/* Header with Error Display */}
       <section className="border-2 border-black p-6 mb-6 bg-white">
-        <div className="flex justify-between items-center">
+        <div className="flex justify-between items-center mb-4">
           <div>
             <h1 className="text-4xl font-bold mb-2">🏷️ Categories</h1>
             <p className="text-gray-600">Manage your expense categories</p>
           </div>
           <button
             onClick={handleAdd}
-            className="border-2 border-black bg-green-600 text-white px-6 py-3 hover:bg-green-700 transition font-semibold"
+            disabled={isAdding}
+            className="border-2 border-black bg-green-600 text-white px-6 py-3 hover:bg-green-700 transition font-semibold disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            + Add Category
+            {isAdding ? "⏳ Adding..." : "+ Add Category"}
           </button>
         </div>
+
+        {(addError || updateError || deleteError) && (
+          <div className="mt-4 p-4 border-2 border-red-500 bg-red-50">
+            <p className="text-red-700 font-semibold mb-2">⚠️ Error:</p>
+            {addError && <p className="text-red-600">• Add: {addError}</p>}
+            {updateError && (
+              <p className="text-red-600">• Update: {updateError}</p>
+            )}
+            {deleteError && (
+              <p className="text-red-600">• Delete: {deleteError}</p>
+            )}
+            <button
+              onClick={() => dispatch(clearErrors())}
+              className="mt-3 text-sm underline text-red-700 hover:text-red-900"
+            >
+              Clear Errors
+            </button>
+          </div>
+        )}
       </section>
 
-      {/* ===================  LOADING STATE =================== */}
+      {/* Loading State */}
       {status === "loading" && (
         <div className="text-center py-12 border-2 border-black bg-white">
           <p className="text-xl text-gray-600">⏳ Loading categories...</p>
         </div>
       )}
 
-      {/* ===================  ERROR STATE =================== */}
+      {/* Error State */}
       {status === "failed" && (
         <div className="text-center py-12 border-2 border-red-500 bg-red-50">
           <p className="text-xl text-red-600">❌ Error loading categories</p>
         </div>
       )}
 
-      {/* ===================  CATEGORIES GRID =================== */}
+      {/* Categories Grid */}
       {status === "succeeded" && (
         <section className="border-2 border-black p-6 bg-white">
           <h3 className="font-bold text-xl mb-4 border-b-2 border-gray-300 pb-3">
@@ -166,17 +182,19 @@ function CategoriesPage() {
                     <div className="flex gap-2">
                       <button
                         onClick={() => handleEdit(category)}
-                        className="text-blue-600 hover:text-blue-800 text-xl transition"
-                        title="Edit"
+                        disabled={isUpdating || isDeleting}
+                        className="text-blue-600 hover:text-blue-800 text-xl transition disabled:opacity-30 disabled:cursor-not-allowed"
+                        title={isUpdating ? "Updating..." : "Edit"}
                       >
-                        ✏️
+                        {isUpdating ? "⏳" : "✏️"}
                       </button>
                       <button
                         onClick={() => handleDelete(category.id)}
-                        className="text-red-600 hover:text-red-800 text-xl transition"
-                        title="Delete"
+                        disabled={isUpdating || isDeleting}
+                        className="text-red-600 hover:text-red-800 text-xl transition disabled:opacity-30 disabled:cursor-not-allowed"
+                        title={isDeleting ? "Deleting..." : "Delete"}
                       >
-                        🗑️
+                        {isDeleting ? "⏳" : "🗑️"}
                       </button>
                     </div>
                   </div>
@@ -190,56 +208,15 @@ function CategoriesPage() {
         </section>
       )}
 
-      {/* ===================  MODAL ADD/EDIT =================== */}
-      {showModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white border-4 border-black p-6 max-w-md w-full">
-            <h3 className="text-2xl font-bold mb-4 border-b-2 border-gray-300 pb-3">
-              {editingCategory ? "✏️ Edit Category" : "➕ Add Category"}
-            </h3>
+      {/* Modal Form */}
+      <CategoryForm
+        isOpen={showModal}
+        onClose={handleCloseModal}
+        onSave={handleSave}
+        editingCategory={editingCategory}
+      />
 
-            <form onSubmit={handleSave} className="space-y-4">
-              {/* Category Name */}
-              <div>
-                <label className="block mb-2 font-semibold text-gray-700">
-                  Category Name <span className="text-red-500">*</span>
-                </label>
-                <input
-                  type="text"
-                  value={categoryName}
-                  onChange={(e) => setCategoryName(e.target.value)}
-                  className="w-full border-2 border-gray-300 p-3 focus:border-green-500 focus:outline-none"
-                  placeholder="e.g., Food, Transport, Entertainment"
-                  required
-                  autoFocus
-                />
-                <p className="text-xs text-gray-500 mt-1">
-                  Enter a unique category name
-                </p>
-              </div>
-
-              {/* Buttons */}
-              <div className="flex gap-3 pt-4">
-                <button
-                  type="submit"
-                  className="flex-1 bg-green-600 text-white px-4 py-3 font-semibold hover:bg-green-700 transition border-2 border-black"
-                >
-                  {editingCategory ? "💾 Update" : "✅ Save"}
-                </button>
-                <button
-                  type="button"
-                  onClick={handleCloseModal}
-                  className="flex-1 bg-gray-500 text-white px-4 py-3 font-semibold hover:bg-gray-600 transition border-2 border-black"
-                >
-                  ❌ Cancel
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
-      )}
-
-      {/* ===================  FOOTER INFO =================== */}
+      {/* Footer */}
       <div className="text-center text-sm text-gray-600 mt-8 p-4 border-2 border-gray-300 bg-gray-50">
         <p className="mb-2">
           📄 <strong>CATEGORIES PAGE</strong> - Dikerjakan oleh{" "}
@@ -251,8 +228,13 @@ function CategoriesPage() {
           <strong className="text-green-600">18 POIN!</strong>
         </p>
         <p className="text-xs text-gray-500 mt-2">
-          ✅ Fully functional CRUD operations | Duplicate check | Redux state
-          management
+          🏆 <strong>REDUX BEST PRACTICES:</strong>
+        </p>
+        <p className="text-xs text-gray-500">
+          ✅ Global State in Redux | ✅ UI State in useState | ✅ Per-operation
+          Loading States
+          <br />✅ Async Thunks | ✅ Validation in Redux | ✅ Error Handling |
+          ✅ Optimistic Updates
         </p>
       </div>
     </div>
