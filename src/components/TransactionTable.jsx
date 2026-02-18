@@ -3,7 +3,7 @@
 // KAPAN DIISI: Phase 3 - Saat mengerjakan TransactionsPage
 // DIGUNAKAN DI: TransactionsPage.jsx
 
-// [TAMBAHAN]: Import komponen UI dari table.jsx
+// Import komponen UI dari table.jsx
 import {
   Table,
   TableHeader,
@@ -15,11 +15,11 @@ import {
 
 function TransactionTable({ transactions, onEdit, onDelete }) {
   return (
-    <div className="border-4 border-orange-500 p-4">
-      <h3 className="font-bold mb-4">INI TRANSACTION TABLE COMPONENT</h3>
+    <div className="">
+      <h3 className="text-2xl font-bold mb-4">Transactions List</h3>
 
-      <div className="border-2 border-gray-300">
-        {/* [MODIFIKASI]: Mengganti table standar dengan komponen UI table.jsx */}
+      <div className="">
+        {/* Mengganti table standar dengan komponen UI table.jsx */}
         <Table>
           <TableHeader>
             <TableRow>
@@ -70,10 +70,6 @@ function TransactionTable({ transactions, onEdit, onDelete }) {
           </TableBody>
         </Table>
       </div>
-
-      <p className="text-xs text-gray-400 mt-4">
-        ⬆️ Sekarang menggunakan komponen dari table.jsx
-      </p>
     </div>
   );
 }
