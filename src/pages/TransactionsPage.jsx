@@ -7,23 +7,51 @@ import { useDispatch, useSelector } from "react-redux";
 import { fetchTransactions, addTransaction, updateTransaction, deleteTransaction } from '../store/transactionSlice';
 
 function TransactionsPage() {
+  // Setup Redux Hook
+  const dispatch = useDispatch();
+  const transactions = useSelector((state) => state.transactions.items);
+  const status = useSelector((state) => state.transactions.status)
+
   // TODO: Setup useState untuk local state (3 POIN!)
   const [searchTerm, setSearchTerm] = useState('');
   const [filterCategory, setFilterCategory] = useState('All');
   const [showModal, setShowModal] = useState(false);
   const [editingTransaction, setEditingTransaction] = useState(null);
 
-  // TODO: Setup useEffect untuk fetch data (3 POIN!)
-  // useEffect(() => {
-  //   if (status === 'idle') {
-  //     dispatch(fetchTransactions());
-  //   }
-  // }, [status, dispatch]);
+  // Setup useEffect untuk fetch data (3 POIN!)
   useEffect(() => {
     if (status === 'idle') {
-      dispatchEvent(fetchTransaction());
+      dispatch(fetchTransactions());
     }
   }, [status, dispatch]);
+
+  // Handle CRUD Operations
+  const handleAdd = (formData) => {
+    dispatch(
+      addTransaction(formData));
+  }
+
+  const handleUpdate = (id, newData) => {
+    dispatch(
+      updateTransaction({ 
+        id: id, 
+        ...newData,
+       }),
+    );
+  }
+
+  const handleDelete = (id) => {
+    dispatch(deleteTransaction(id));
+  }
+
+  // Filter transactions
+  const filteredTransactions = transactions.filter((t) => {
+    const matchSearch = t.description
+      .toLowerCase()
+      .includes(searchTerm.toLowerCase());
+    const matchCategory = filterCategory === "" || t.category === filterCategory;
+    return matchSearch && matchCategory;
+  })
 
   return (
     <div className="max-w-7xl mx-auto p-6">
