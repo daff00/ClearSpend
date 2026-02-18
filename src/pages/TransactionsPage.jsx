@@ -4,7 +4,7 @@
 // Import Libraries
 import { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { fetchTranscations, addTransaction, updateTransaction, deleteTransaction } from '../store/transactionSlice';
+import { fetchTransactions, addTransaction, updateTransaction, deleteTransaction } from '../store/transactionSlice';
 
 function TransactionsPage() {
   // TODO: Setup useState untuk local state (3 POIN!)
@@ -19,6 +19,11 @@ function TransactionsPage() {
   //     dispatch(fetchTransactions());
   //   }
   // }, [status, dispatch]);
+  useEffect(() => {
+    if (status === 'idle') {
+      dispatchEvent(fetchTransaction());
+    }
+  }, [status, dispatch]);
 
   return (
     <div className="max-w-7xl mx-auto p-6">
