@@ -10,12 +10,12 @@
 
 // STEP 1: Import dependencies
 // 💡 TODO: Ketik manual 2 baris dibawah ini:
-// import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-// import categoriesData from "../data/categories.json";
+import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
+import categoriesData from "../data/categories.json";
 
 // STEP 2: Buat Redux Thunk untuk FETCH CATEGORIES (5 POIN!)
 // 💡 TODO: Ketik manual code dibawah ini:
-/*
+
 export const fetchCategories = createAsyncThunk(
   "categories/fetchCategories",
   async () => {
@@ -26,11 +26,11 @@ export const fetchCategories = createAsyncThunk(
     });
   }
 );
-*/
+
 
 // STEP 3: Buat Category Slice (4 POIN Redux!)
 // 💡 TODO: Ketik manual code dibawah ini:
-/*
+
 const categorySlice = createSlice({
   name: "categories",
   
@@ -79,15 +79,15 @@ const categorySlice = createSlice({
       });
   },
 });
-*/
+
 
 // STEP 4: Export actions dan reducer
 // 💡 TODO: Ketik manual 2 baris dibawah ini:
-/*
+
 export const { addCategory, updateCategory, deleteCategory } =
   categorySlice.actions;
 export default categorySlice.reducer;
-*/
+
 
 // ============================================================
 // CARA MENGGUNAKAN DI COMPONENT:
