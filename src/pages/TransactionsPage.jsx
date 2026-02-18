@@ -1,18 +1,17 @@
 // FILE INI: Transactions Page - CRUD transaksi dengan tabel
 // PERSON: Person 3
 // CARA ISI: Implementasi useState + useEffect + Redux (lihat IMPLEMENTATION_GUIDE.md)
+// Import Libraries
+import { useState, useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { fetchTranscations, addTransaction, updateTransaction, deleteTransaction } from '../store/transactionSlice';
 
 function TransactionsPage() {
-  // TODO: Import hooks dan Redux
-  // import { useState, useEffect } from 'react';
-  // import { useDispatch, useSelector } from 'react-redux';
-  // import { fetchTransactions, addTransaction, updateTransaction, deleteTransaction } from '../store/transactionSlice';
-
   // TODO: Setup useState untuk local state (3 POIN!)
-  // const [searchTerm, setSearchTerm] = useState('');
-  // const [filterCategory, setFilterCategory] = useState('All');
-  // const [showModal, setShowModal] = useState(false);
-  // const [editingTransaction, setEditingTransaction] = useState(null);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [filterCategory, setFilterCategory] = useState('All');
+  const [showModal, setShowModal] = useState(false);
+  const [editingTransaction, setEditingTransaction] = useState(null);
 
   // TODO: Setup useEffect untuk fetch data (3 POIN!)
   // useEffect(() => {
