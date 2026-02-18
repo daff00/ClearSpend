@@ -75,7 +75,7 @@ function CategoriesPage() {
   const handleDelete = async (id) => {
     if (
       window.confirm(
-        "Hapus kategori ini? Transaksi yang sudah ada mungkin akan kehilangan referensi kategori."
+        "Hapus kategori ini? Transaksi yang sudah ada mungkin akan kehilangan referensi kategori.",
       )
     ) {
       try {
@@ -96,13 +96,13 @@ function CategoriesPage() {
           updateCategoryAsync({
             id: editingCategory.id,
             name: categoryName,
-          })
+          }),
         ).unwrap();
       } else {
         await dispatch(
           addCategoryAsync({
             name: categoryName,
-          })
+          }),
         ).unwrap();
       }
       setShowModal(false);
