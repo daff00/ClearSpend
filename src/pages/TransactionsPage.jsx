@@ -18,6 +18,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "../components/ui/select";
+import { Plus } from "lucide-react";
 
 import TransactionTable from "../components/TransactionTable";
 import TransactionForm from "../components/TransactionForm";
@@ -91,11 +92,10 @@ function TransactionsPage() {
   return (
     <div className="max-w-7xl mx-auto p-6 space-y-6">
       {/* HEADER SECTION */}
-      <section className="flex justify-between items-center p-4 border rounded-lg bg-card">
+      <section className="flex justify-between items-center">
         <div>
           <h1 className="text-3xl font-bold tracking-tight">Transactions</h1>
-          {/* text-muted-foreground memberikan warna abu-abu yang pas untuk deskripsi */}
-          <p className="text-muted-foreground text-sm">
+          <p className="text-muted-foreground">
             Kelola semua pemasukan dan pengeluaran Anda.
           </p>
         </div>
@@ -105,7 +105,8 @@ function TransactionsPage() {
             setShowModal(true);
           }}
         >
-          + Add Transaction
+          <Plus className="mr-2 h-4 w-4" />
+          Add Transaction
         </Button>
       </section>
 
