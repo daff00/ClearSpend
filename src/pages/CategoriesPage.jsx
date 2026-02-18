@@ -244,9 +244,9 @@ function CategoriesPage() {
                           <h3 className="font-semibold text-lg">
                             {category.name}
                           </h3>
-                          <p className="text-xs text-muted-foreground">
+                          {/* <p className="text-xs text-muted-foreground">
                             ID: {category.id}
-                          </p>
+                          </p> */}
                         </div>
                       </div>
                       <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
