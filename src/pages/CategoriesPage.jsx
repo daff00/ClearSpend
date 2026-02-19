@@ -125,10 +125,10 @@ function CategoriesPage() {
       {/* Header with Error Display */}
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">
+          <h1 className="text-2xl sm:text-3xl font-black bg-gradient-to-r from-cyan-500 to-blue-500 bg-clip-text text-transparent">
             Categories
           </h1>
-          <p className="text-sm sm:text-base text-muted-foreground">
+          <p className="text-sm sm:text-base bg-gradient-to-r from-cyan-500 to-blue-500 bg-clip-text text-transparent">
             Atur kategori transaksi untuk pelaporan yang lebih baik.
           </p>
         </div>
@@ -138,7 +138,7 @@ function CategoriesPage() {
             <Button
               onClick={handleAdd}
               disabled={isAdding}
-              className="w-full sm:w-auto"
+              className="w-full sm:w-auto bg-gradient-to-r from-cyan-500 to-blue-500 hover:from-cyan-600 hover:to-blue-600"
             >
               <Plus className="mr-2 h-4 w-4" />
               <span className="hidden sm:inline">
@@ -184,7 +184,7 @@ function CategoriesPage() {
               <Button
                 onClick={handleSave}
                 disabled={isAdding || isUpdating || !categoryName.trim()}
-                className="w-full sm:w-auto"
+                className="w-full sm:w-auto bg-gradient-to-r from-cyan-500 to-blue-500 hover:from-cyan-600 hover:to-blue-600"
               >
                 {isAdding || isUpdating ? "Saving..." : "Simpan Kategori"}
               </Button>
@@ -237,11 +237,11 @@ function CategoriesPage() {
         <div>
           {categories.length === 0 ? (
             <div className="text-center py-12">
-              <Tag className="h-16 w-16 text-muted-foreground mx-auto mb-4" />
+              <Tag className="h-16 w-16 text-cyan-500 mx-auto mb-4" />
               <p className="text-lg text-muted-foreground mb-4">
                 No categories yet
               </p>
-              <Button onClick={handleAdd}>
+              <Button onClick={handleAdd} className="bg-gradient-to-r from-cyan-500 to-blue-500 hover:from-cyan-600 hover:to-blue-600">
                 <Plus className="mr-2 h-4 w-4" />
                 Add Your First Category
               </Button>
@@ -256,7 +256,7 @@ function CategoriesPage() {
                   <CardContent className="p-4 sm:p-6">
                     <div className="flex items-center justify-between gap-2">
                       <div className="flex items-center gap-3 min-w-0 flex-1">
-                        <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-primary/10 flex items-center justify-center text-primary flex-shrink-0">
+                        <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-gradient-to-br from-cyan-500/10 to-blue-500/10 flex items-center justify-center text-cyan-500 flex-shrink-0">
                           <Tag className="h-5 w-5 sm:h-6 sm:w-6" />
                         </div>
                         <div className="min-w-0 flex-1">
@@ -269,7 +269,7 @@ function CategoriesPage() {
                         <Button
                           variant="ghost"
                           size="icon"
-                          className="text-muted-foreground hover:text-blue-600"
+                          className="text-muted-foreground hover:text-cyan-500"
                           onClick={() => handleEdit(category)}
                           disabled={isUpdating || isDeleting}
                           title="Edit"
