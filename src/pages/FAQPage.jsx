@@ -374,38 +374,6 @@ export default function FAQPage() {
             </div>
           )}
         </div>
-
-        {/* Contact form */}
-        <div className="mt-10">
-          <h2 className="text-center text-gray-700 font-semibold">
-            More questions? Contact Us...
-          </h2>
-
-          <div className="mt-5 bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <input
-                className="w-full rounded-lg border border-gray-200 px-4 py-3 outline-none focus:border-orange-400"
-                placeholder="Full Name"
-              />
-              <input
-                className="w-full rounded-lg border border-gray-200 px-4 py-3 outline-none focus:border-orange-400"
-                placeholder="Email Address"
-              />
-            </div>
-
-            <textarea
-              className="mt-4 w-full rounded-lg border border-gray-200 px-4 py-3 outline-none focus:border-orange-400 min-h-[120px]"
-              placeholder="Your Message..."
-            />
-
-            <button
-              className="mt-5 w-full rounded-lg bg-orange-400 text-white font-semibold py-3 hover:bg-orange-500 transition"
-              type="button"
-            >
-              Send Message
-            </button>
-          </div>
-        </div>
       </div>
     </div>
   );
