@@ -30,194 +30,154 @@ export default function FAQPage() {
   =============================== */
   const faqData = useMemo(
     () => ({
-      general: [
-        {
-          q: "How do I start using ClearSpend for the first time?",
-          a:
-            "Start with this simple setup:\n" +
-            "1) Open the Categories page and review the default categories.\n" +
-            "2) Add your own categories if needed (Rent, Groceries, Transport).\n" +
-            "3) Go to Transactions and click Add Transaction.\n" +
-            "4) Choose Income or Expense, then enter amount, date, category, and a short description.\n" +
-            "5) Save and return to the Dashboard to confirm totals and charts update.\n\n" +
-            "Tip: Add 3–5 transactions first so the dashboard becomes meaningful quickly.",
-        },
-        {
-          q: "Can I create my own expense categories?",
-          a:
-            "Yes—categories are customizable.\n" +
-            "1) Go to Categories\n" +
-            "2) Click Add Category\n" +
-            "3) Type a clear, unique name (e.g., “Gym”, “Skincare”)\n" +
-            "4) Save — the category will appear immediately when adding a transaction.\n\n" +
-            "Tip: Keep categories simple at first (8–12) to avoid messy reports.",
-        },
-        {
-          q: "How do I add a transaction correctly so reports stay clean?",
-          a:
-            "Use these steps for consistent records:\n" +
-            "1) Pick the correct type (Income vs Expense).\n" +
-            "2) Enter the amount carefully (avoid extra zeros).\n" +
-            "3) Select the most accurate category.\n" +
-            "4) Use the real transaction date (not the day you remember it).\n" +
-            "5) Write a specific description (e.g., “Lunch - Chicken rice” instead of “Food”).\n\n" +
-            "Consistency helps your charts and monthly summaries make sense.",
-        },
-        {
-          q: "How do I fix mistakes in a transaction?",
-          a:
-            "No problem—just edit it.\n" +
-            "1) Open Transactions\n" +
-            "2) Find the incorrect item\n" +
-            "3) Click Edit\n" +
-            "4) Update amount/type/category/date/description\n" +
-            "5) Save — the Dashboard recalculates automatically.",
-        },
-        {
-          q: "How do I understand the Dashboard and charts?",
-          a:
-            "The Dashboard is a summary view:\n" +
-            "• Total Income: all money received\n" +
-            "• Total Expense: all money spent\n" +
-            "• Balance: income minus expense\n" +
-            "• Category chart: where your spending is highest\n\n" +
-            "If something looks wrong, check whether a transaction was marked as Income vs Expense, or whether its category/date is correct.",
-        },
-      ],
+        general: [
+          {
+            q: "What is ClearSpend and how does it help me?",
+            a:
+              "ClearSpend is a personal finance tracker that helps you understand where your money goes. " +
+              "Instead of guessing your spending, you record income and expenses and the app summarizes everything automatically.\n\n" +
+              "By consistently recording transactions, you can:\n" +
+              "• See how much money you actually spend each month\n" +
+              "• Identify unnecessary spending habits\n" +
+              "• Plan savings more realistically\n" +
+              "• Avoid running out of money before the end of the month\n\n" +
+              "The goal is simple: clarity. When you clearly see your financial behavior, better decisions become easier."
+          },
+          {
+            q: "Who should use this app?",
+            a:
+              "ClearSpend is designed for everyday people — not accountants. " +
+              "Students, workers, freelancers, or families can all use it to monitor their daily spending.\n\n" +
+              "If you ever asked yourself:\n" +
+              "“Where did my money go?”\n" +
+              "then this app is made for you."
+          },
+          {
+            q: "How often should I record transactions?",
+            a:
+              "For best results, record transactions as soon as they happen. " +
+              "Daily tracking keeps your financial overview accurate and prevents forgotten expenses.\n\n" +
+              "If you prefer, you can also update it once per day at night — consistency matters more than timing."
+          },
+          {
+            q: "Do I need financial knowledge to use ClearSpend?",
+            a:
+              "No financial or accounting knowledge is required. " +
+              "You only choose whether the money is income or expense, enter the amount, and select a category.\n\n" +
+              "The app automatically calculates totals, balance, and summaries for you."
+          },
+          {
+            q: "What makes ClearSpend different from notes or spreadsheets?",
+            a:
+              "Unlike manual notes or spreadsheets, ClearSpend automatically organizes and analyzes your data. " +
+              "You don't need formulas, calculations, or formatting.\n\n" +
+              "You simply enter transactions — the app turns them into meaningful insights."
+          }
+        ],
+
 
       // ✅ NEW CATEGORY (replacing Payment & Billing)
-      features: [
-        {
-          q: "What are the main features of ClearSpend?",
-          a:
-            "ClearSpend focuses on simple expense tracking and clear summaries.\n" +
-            "Key features include:\n" +
-            "• Adding income and expense transactions\n" +
-            "• Creating and managing categories\n" +
-            "• Viewing dashboard totals and charts\n" +
-            "• Searching transactions (if implemented in your Transactions page)\n\n" +
-            "As you improve the project, you can add export, backup, and budgeting tools as advanced features.",
-        },
-        {
-          q: "How do categories help me track spending more accurately?",
-          a:
-            "Categories organize your spending so your dashboard can show meaningful insights.\n" +
-            "To use categories well:\n" +
-            "1) Create categories that match your lifestyle (Food, Transport, Bills).\n" +
-            "2) Use the same category consistently for the same type of expense.\n" +
-            "3) Avoid creating too many categories too early.\n\n" +
-            "This makes charts clearer and helps you spot where your money goes most.",
-        },
-        {
-          q: "Can I export my data to Excel or CSV?",
-          a:
-            "Export is not included by default in many learning versions.\n\n" +
-            "If you want to add it later, a common approach is:\n" +
-            "1) Convert your transaction list into a table format\n" +
-            "2) Export as CSV (simple) or XLSX (more advanced)\n" +
-            "3) Use a library like 'xlsx' for Excel exports\n\n" +
-            "For now, the best focus is making your tracking and dashboard stable first.",
-        },
-        {
-          q: "Will my data stay saved after I refresh the page?",
-          a:
-            "It depends on your storage setup.\n\n" +
-            "• If your project only uses React state/Redux without persistence, data can reset after refresh.\n" +
-            "• If you add persistence (localStorage or Firebase), your data can remain saved.\n\n" +
-            "A good next step for learning is saving Redux state into localStorage.",
-        },
-        {
-          q: "Can I customize the dashboard to show different charts?",
-          a:
-            "Yes, you can customize it depending on your implementation.\n" +
-            "Common chart upgrades include:\n" +
-            "• Spending by category (pie/doughnut chart)\n" +
-            "• Income vs expense over time (line chart)\n" +
-            "• Monthly totals (bar chart)\n\n" +
-            "Start simple: one category chart + totals is already a strong foundation.",
-        },
-      ],
+          features: [
+      {
+        q: "How do I start tracking my expenses?",
+        a:
+          "Start with three simple steps:\n\n" +
+          "1. Add or review categories (Food, Transport, Bills, etc.)\n" +
+          "2. Record your first transaction\n" +
+          "3. Check your dashboard summary\n\n" +
+          "After adding a few transactions, the dashboard will begin showing useful information about your spending habits."
+      },
+      {
+        q: "Can I organize my spending based on my lifestyle?",
+        a:
+          "Yes. You can create your own categories that match your real life. " +
+          "For example: Coffee, Online Shopping, Pets, Subscriptions, or Travel.\n\n" +
+          "Using familiar categories helps you understand your financial behavior more clearly."
+      },
+      {
+        q: "What happens when I edit or delete a transaction?",
+        a:
+          "The dashboard updates instantly. " +
+          "Your totals, balance, and charts automatically recalculate to reflect the change.\n\n" +
+          "You never need to manually fix numbers."
+      },
+      {
+        q: "How do I understand the dashboard?",
+        a:
+          "The dashboard is your financial summary:\n\n" +
+          "• Balance = Income minus Expenses\n" +
+          "• Category chart = Where most money goes\n" +
+          "• Totals = Overall financial activity\n\n" +
+          "If something looks incorrect, simply review your transactions — the dashboard always reflects your records."
+      },
+      {
+        q: "What is the best way to keep my records accurate?",
+        a:
+          "Be consistent. Small habits create reliable data:\n\n" +
+          "• Record transactions daily\n" +
+          "• Use clear categories\n" +
+          "• Enter correct dates\n\n" +
+          "Accurate input leads to accurate financial insights."
+      }
+    ],
 
-      security: [
-        {
-          q: "Where is my data stored?",
-          a:
-            "In a basic learning version, data is typically stored locally (Redux state or browser storage).\n\n" +
-            "If you later add Firebase, you can store data in the cloud with authentication and user-based access rules.",
-        },
-        {
-          q: "What happens if I clear my browser data?",
-          a:
-            "If your app stores data locally, clearing browser storage can remove saved transactions.\n\n" +
-            "To prevent this, you can implement cloud backup (future feature) or export your data.",
-        },
-        {
-          q: "Is my data shared with anyone?",
-          a:
-            "No. ClearSpend should not share your financial data with third parties.\n\n" +
-            "Your data is only used to display your personal dashboard and transaction history.",
-        },
-        {
-          q: "Can I use the app offline?",
-          a:
-            "Yes—if your data is stored locally, the app can work offline after it loads.\n\n" +
-            "Cloud sync features require internet because they communicate with a server.",
-        },
-        {
-          q: "How can cloud backup stay secure (if I add it later)?",
-          a:
-            "A secure cloud setup typically includes:\n" +
-            "1) User authentication (login)\n" +
-            "2) Encrypted storage\n" +
-            "3) Security rules: each user can only access their own data\n\n" +
-            "This prevents other users from reading or changing your records.",
-        },
-      ],
+          security: [
+      {
+        q: "Is my financial information safe?",
+        a:
+          "Yes. Your financial data is only used to display your personal records inside the application. " +
+          "The app does not sell or share your financial behavior with third parties."
+      },
+      {
+        q: "Can other people see my spending data?",
+        a:
+          "No. Your data is private and only accessible on the device or account you use."
+      },
+      {
+        q: "What happens if I clear browser or app storage?",
+        a:
+          "Clearing storage may remove locally saved data. " +
+          "This is similar to uninstalling an app that stores files on your device."
+      },
+      {
+        q: "Can I use ClearSpend without internet?",
+        a:
+          "Yes. Most tracking features work offline after the app loads. " +
+          "Internet is only required for future sync or backup features."
+      },
+      {
+        q: "Why does privacy matter in a finance app?",
+        a:
+          "Your spending habits describe your lifestyle. " +
+          "Protecting that information ensures your personal behavior and preferences remain confidential."
+      }
+    ],
 
-      account: [
-        {
-          q: "Do I need an account to use ClearSpend?",
-          a:
-            "Not necessarily. Many learning projects let you use the app without login.\n\n" +
-            "An account is usually required only if you add multi-device sync or cloud backup later.",
-        },
-        {
-          q: "How do I reset everything and start from zero?",
-          a:
-            "There are two common approaches:\n" +
-            "• Delete transactions individually (safe and controlled)\n" +
-            "• Clear browser storage (full reset if you store locally)\n\n" +
-            "If you build a “Clear All” button, it’s the easiest option for users.",
-        },
-        {
-          q: "Can I change a transaction category after it’s created?",
-          a:
-            "Yes.\n" +
-            "1) Go to Transactions\n" +
-            "2) Click Edit on the transaction\n" +
-            "3) Change the category\n" +
-            "4) Save — charts update automatically.",
-        },
-        {
-          q: "Will new features be added in future updates?",
-          a:
-            "Yes. Common updates include:\n" +
-            "• Export to CSV/Excel\n" +
-            "• Cloud backup\n" +
-            "• Multi-device sync\n" +
-            "• Improved analytics\n\n" +
-            "Your existing data can stay compatible if you keep consistent fields (type, amount, date, category, description).",
-        },
-        {
-          q: "What technologies power this application?",
-          a:
-            "ClearSpend is built using:\n" +
-            "• React for the UI\n" +
-            "• Redux Toolkit/Redux for state management\n" +
-            "• React Router for navigation\n" +
-            "• Chart.js for charts\n" +
-            "• Tailwind CSS for styling",
-        },
+          account: [
+      {
+        q: "Do I need an account to use the app?",
+        a:
+          "No account is required for basic usage. " +
+          "You can immediately start recording transactions and managing your spending."
+      },
+      {
+        q: "How can I start fresh and reset everything?",
+        a:
+          "You can delete transactions individually or clear all stored data to begin from zero. " +
+          "This is useful when starting a new month or reorganizing categories."
+      },
+      {
+        q: "Will the app continue to improve?",
+        a:
+          "Yes. Updates may include new analytics, better tracking tools, and improved financial insights " +
+          "while keeping your existing records usable."
+      },
+      {
+        q: "How can I get the most benefit from the app long-term?",
+        a:
+          "Treat ClearSpend like a daily habit, not a monthly task. " +
+          "The more consistent you are, the clearer your financial picture becomes."
+      },
       ],
     }),
     []
