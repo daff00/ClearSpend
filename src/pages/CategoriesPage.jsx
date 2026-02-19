@@ -53,6 +53,8 @@ function CategoriesPage() {
   const [showModal, setShowModal] = useState(false);
   const [editingCategory, setEditingCategory] = useState(null);
   const [categoryName, setCategoryName] = useState("");
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [idToDelete, setIdToDelete] = useState(null);
 
   useEffect(() => {
     if (status === "idle") {
@@ -72,17 +74,21 @@ function CategoriesPage() {
     setShowModal(true);
   };
 
-  const handleDelete = async (id) => {
-    if (
-      window.confirm(
-        "Hapus kategori ini? Transaksi yang sudah ada mungkin akan kehilangan referensi kategori.",
-      )
-    ) {
+  const handleDelete = (id) => {
+    setIdToDelete(id);
+    setShowDeleteModal(true);
+  };
+
+  const confirmDelete = async () => {
+    if (idToDelete) {
       try {
-        await dispatch(deleteCategoryAsync(id)).unwrap();
+        await dispatch(deleteCategoryAsync(idToDelete)).unwrap();
         dispatch(clearErrors());
       } catch (error) {
         console.error("Failed to delete:", error);
+      } finally {
+        setShowDeleteModal(false);
+        setIdToDelete(null);
       }
     }
   };
@@ -241,7 +247,10 @@ function CategoriesPage() {
               <p className="text-lg text-muted-foreground mb-4">
                 No categories yet
               </p>
-              <Button onClick={handleAdd} className="bg-gradient-to-r from-cyan-500 to-blue-500 hover:from-cyan-600 hover:to-blue-600">
+              <Button
+                onClick={handleAdd}
+                className="bg-gradient-to-r from-cyan-500 to-blue-500 hover:from-cyan-600 hover:to-blue-600"
+              >
                 <Plus className="mr-2 h-4 w-4" />
                 Add Your First Category
               </Button>
@@ -293,6 +302,40 @@ function CategoriesPage() {
               ))}
             </div>
           )}
+        </div>
+      )}
+
+      {/* DELETE CONFIRMATION MODAL */}
+      {showDeleteModal && (
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-[60]">
+          <div className="bg-white p-6 rounded-lg max-w-sm w-full mx-4 shadow-xl border">
+            <h3 className="text-xl font-bold mb-2">Hapus Kategori?</h3>
+            <p className="text-muted-foreground mb-6">
+              Tindakan ini tidak dapat dibatalkan. Transaksi yang sudah ada
+              mungkin akan kehilangan referensi kategori ini.
+            </p>
+            <div className="flex gap-3">
+              <Button
+                variant="outline"
+                className="flex-1"
+                onClick={() => {
+                  setShowDeleteModal(false);
+                  setIdToDelete(null);
+                }}
+                disabled={isDeleting}
+              >
+                Batal
+              </Button>
+              <Button
+                variant="destructive"
+                className="flex-1"
+                onClick={confirmDelete}
+                disabled={isDeleting}
+              >
+                {isDeleting ? "Menghapus..." : "Hapus"}
+              </Button>
+            </div>
+          </div>
         </div>
       )}
     </div>
