@@ -13,7 +13,7 @@ import { cn } from "@/lib/utils"; // Pastikan utilitas 'cn' diimport untuk class
 function TransactionTable({ transactions, onEdit, onDelete }) {
   return (
     <div className="">
-      <h3 className="text-2xl font-bold mb-4">Transactions List</h3>
+      <h3 className="text-2xl font-black bg-gradient-to-r from-cyan-500 to-blue-500 bg-clip-text text-transparent">Transactions List</h3>
 
       <div className="">
         <Table>
@@ -21,8 +21,8 @@ function TransactionTable({ transactions, onEdit, onDelete }) {
             <TableRow>
               <TableHead>Date</TableHead>
               <TableHead>Description</TableHead>
-              <TableHead>Amount</TableHead>
               <TableHead>Category</TableHead>
+              <TableHead>Amount</TableHead>
               <TableHead className="text-right">Actions</TableHead>
             </TableRow>
           </TableHeader>
@@ -41,6 +41,12 @@ function TransactionTable({ transactions, onEdit, onDelete }) {
                       {transaction.description}
                     </TableCell>
 
+                    <TableCell>
+                      <span className="px-2 py-1 bg-gray-100 rounded-full text-xs">
+                        {transaction.category}
+                      </span>
+                    </TableCell>
+
                     {/* CELL AMOUNT: Menggunakan class kondisional untuk warna */}
                     <TableCell
                       className={cn(
@@ -54,11 +60,6 @@ function TransactionTable({ transactions, onEdit, onDelete }) {
                       Rp {transaction.amount.toLocaleString("id-ID")}
                     </TableCell>
 
-                    <TableCell>
-                      <span className="px-2 py-1 bg-gray-100 rounded-full text-xs">
-                        {transaction.category}
-                      </span>
-                    </TableCell>
                     <TableCell className="text-right">
                       <button
                         onClick={() => onEdit(transaction)}
