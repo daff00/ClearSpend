@@ -96,8 +96,8 @@ function TransactionsPage() {
       {/* HEADER SECTION */}
       <section className="flex justify-between items-center">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight">Transactions</h1>
-          <p className="text-muted-foreground">
+          <h1 className="text-3xl font-black bg-gradient-to-r from-cyan-500 to-blue-500 bg-clip-text text-transparent">Transactions</h1>
+          <p className="bg-gradient-to-r from-cyan-500 to-blue-500 bg-clip-text text-transparent">
             Kelola semua pemasukan dan pengeluaran Anda.
           </p>
         </div>
@@ -106,6 +106,7 @@ function TransactionsPage() {
             setEditingTransaction(null);
             setShowModal(true);
           }}
+          className="bg-gradient-to-r from-cyan-500 to-blue-500"
         >
           <Plus className="mr-2 h-4 w-4" />
           Add Transaction
