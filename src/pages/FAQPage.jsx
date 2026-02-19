@@ -253,9 +253,9 @@ export default function FAQPage() {
   return (
     <div className="min-h-screen bg-gray-100">
       {/* ===== Top header ===== */}
-      <div className="bg-orange-400">
+      <div  className="bg-[radial-gradient(ellipse_100%100%_at_bottom_left,#4169e1,_#87ceeb)] rounded-2xl p-4 mb-2">
         <div className="max-w-5xl mx-auto px-6 pt-14 pb-28 text-center">
-          <h1 className="text-white text-3xl md:text-4xl font-semibold">
+          <h1 className="text-white text-shadow-black-500 text-shadow-xl text-3xl md:text-4xl font-semibold">
             Frequently Asked Questions
           </h1>
           <p className="text-white/90 text-sm md:text-base mt-3 max-w-2xl mx-auto">
@@ -309,7 +309,7 @@ export default function FAQPage() {
                 className={[
                   "rounded-xl bg-white shadow-sm border transition p-4 text-left",
                   active
-                    ? "border-orange-400 ring-2 ring-orange-200"
+                    ? "border-blue-400 ring-2 ring-blue-200"
                     : "border-gray-200 hover:border-gray-300",
                 ].join(" ")}
               >
@@ -343,7 +343,7 @@ export default function FAQPage() {
                       "w-9 h-9 rounded-full flex items-center justify-center border transition",
                       open
                         ? "bg-gray-100 border-gray-300"
-                        : "bg-orange-400 border-orange-400",
+                        : "bg-blue-400 border-blue-400",
                     ].join(" ")}
                   >
                     <span
