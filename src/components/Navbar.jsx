@@ -25,11 +25,11 @@ function Navbar() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   return (
-    <nav className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+    <nav className="sticky top-0 z-50 w-full border-b border-cyan-200/50 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="container mx-auto flex h-16 max-w-7xl items-center justify-between px-4">
         <Link
           to="/"
-          className="flex items-center gap-2 font-bold text-xl text-primary"
+          className="flex items-center gap-2 font-bold text-xl bg-gradient-to-r from-cyan-500 to-blue-500 bg-clip-text text-transparent hover:from-cyan-600 hover:to-blue-600 transition-all"
           onClick={() => setMobileMenuOpen(false)}
         >
           <svg
@@ -38,7 +38,7 @@ function Navbar() {
             viewBox="0 0 32 32"
             fill="none"
             xmlns="http://www.w3.org/2000/svg"
-            className="text-primary"
+            className="text-cyan-500"
           >
             <path
               d="M16 3.5C9.09644 3.5 3.5 9.09644 3.5 16C3.5 22.9036 9.09644 28.5 16 28.5C22.9036 28.5 28.5 22.9036 28.5 16C28.5 9.09644 22.9036 3.5 16 3.5Z"
@@ -63,10 +63,10 @@ function Navbar() {
                 key={item.href}
                 to={item.href}
                 className={cn(
-                  "flex items-center gap-2 text-sm font-medium transition-colors hover:text-primary",
+                  "flex items-center gap-2 text-sm font-medium transition-all hover:scale-105",
                   pathname === item.href
-                    ? "text-primary underline underline-offset-4"
-                    : "text-muted-foreground",
+                    ? "text-cyan-500 underline underline-offset-4 decoration-2 decoration-cyan-500"
+                    : "text-muted-foreground hover:text-cyan-500",
                 )}
               >
                 <Icon className="h-4 w-4" />
@@ -78,7 +78,7 @@ function Navbar() {
 
         {/* Mobile Menu Button */}
         <button
-          className="md:hidden p-2 text-muted-foreground hover:text-primary transition-colors"
+          className="md:hidden p-2 text-muted-foreground hover:text-cyan-500 transition-colors"
           onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
           aria-label="Toggle menu"
         >
@@ -92,7 +92,7 @@ function Navbar() {
 
       {/* Mobile Navigation */}
       {mobileMenuOpen && (
-        <div className="md:hidden border-t bg-background">
+        <div className="md:hidden border-t border-cyan-200/50 bg-background">
           <div className="container mx-auto max-w-7xl px-4 py-4 flex flex-col gap-2">
             {navItems.map((item) => {
               const Icon = item.icon;
@@ -102,9 +102,9 @@ function Navbar() {
                   to={item.href}
                   onClick={() => setMobileMenuOpen(false)}
                   className={cn(
-                    "flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium transition-colors hover:bg-accent",
+                    "flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium transition-colors hover:bg-gradient-to-r hover:from-cyan-50 hover:to-blue-50",
                     pathname === item.href
-                      ? "bg-accent text-primary"
+                      ? "bg-gradient-to-r from-cyan-500 to-blue-500 text-white"
                       : "text-muted-foreground",
                   )}
                 >
