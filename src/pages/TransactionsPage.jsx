@@ -106,7 +106,7 @@ function TransactionsPage() {
             setEditingTransaction(null);
             setShowModal(true);
           }}
-          className="bg-gradient-to-r from-cyan-500 to-blue-500"
+          className="w-full sm:w-auto bg-gradient-to-r from-cyan-500 to-blue-500 hover:from-cyan-600 hover:to-blue-600"
         >
           <Plus className="mr-2 h-4 w-4" />
           Add Transaction
