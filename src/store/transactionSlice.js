@@ -21,6 +21,9 @@
 // import transactionsData from "../data/transactions.json";
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import transactionsData from "../data/transactions.json";
+import { 
+  Briefcase, Utensils, Home, ShoppingCart, Car, Ticket, PiggyBank, Gift 
+} from 'lucide-react';
 
 // STEP 2: Buat Redux Thunk untuk FETCH DATA (5 POIN!)
 // Redux Thunk = fungsi async untuk ambil data dari API/JSON
@@ -36,6 +39,17 @@ export const fetchTransactions = createAsyncThunk(
     })
   }
 )
+
+export const ICON_MAP = {
+  Briefcase,
+  Utensils,
+  Home,
+  ShoppingCart,
+  Car,
+  Ticket,
+  PiggyBank,
+  Gift,
+}
 
 // STEP 3: Buat Slice dengan createSlice (4 POIN Redux!)
 // Slice = state + reducers dalam 1 object

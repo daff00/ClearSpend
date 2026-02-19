@@ -1,186 +1,380 @@
-// FILE INI: FAQ Page - Frequently Asked Questions
-// PERSON: Person 5
-// CARA ISI: Tambah FAQ items, styling accordion
+// FAQPage.jsx
+// Beginner-friendly FAQ page using React + Tailwind CSS
+// Features (unchanged):
+// ✅ Category tabs (General / Features / Security / Account)
+// ✅ Search within the selected category
+// ✅ Accordion (click a question to open/close the answer)
+// ✅ Contact form UI (no backend submission yet)
 
-import { useState } from 'react';
+import { useMemo, useState } from "react";
 
-function FAQPage() {
-  // useState untuk handle accordion open/close (3 POIN!)
-  const [openFAQ, setOpenFAQ] = useState(null);
+export default function FAQPage() {
+  /* ===============================
+     1) CATEGORIES (Top buttons)
+     - Replaced "Payment & Billing" with "Features & Usage"
+  =============================== */
+  const categories = useMemo(
+    () => [
+      { id: "general", label: "General Question", icon: "💡" },
+      { id: "features", label: "Features & Usage", icon: "🧩" }, // ✅ replaced
+      { id: "security", label: "Safety & Security", icon: "🛡️" },
+      { id: "account", label: "Account & Update", icon: "👤" },
+    ],
+    []
+  );
 
-  // Toggle FAQ accordion
-  const toggleFAQ = (index) => {
-    setOpenFAQ(openFAQ === index ? null : index);
+  /* ===============================
+     2) FAQ DATA (Questions + Answers)
+     - Updated questions that used to be in "billing" into the new "features" category
+     - Everything else stays the same
+  =============================== */
+  const faqData = useMemo(
+    () => ({
+      general: [
+        {
+          q: "How do I start using ClearSpend for the first time?",
+          a:
+            "Start with this simple setup:\n" +
+            "1) Open the Categories page and review the default categories.\n" +
+            "2) Add your own categories if needed (Rent, Groceries, Transport).\n" +
+            "3) Go to Transactions and click Add Transaction.\n" +
+            "4) Choose Income or Expense, then enter amount, date, category, and a short description.\n" +
+            "5) Save and return to the Dashboard to confirm totals and charts update.\n\n" +
+            "Tip: Add 3–5 transactions first so the dashboard becomes meaningful quickly.",
+        },
+        {
+          q: "Can I create my own expense categories?",
+          a:
+            "Yes—categories are customizable.\n" +
+            "1) Go to Categories\n" +
+            "2) Click Add Category\n" +
+            "3) Type a clear, unique name (e.g., “Gym”, “Skincare”)\n" +
+            "4) Save — the category will appear immediately when adding a transaction.\n\n" +
+            "Tip: Keep categories simple at first (8–12) to avoid messy reports.",
+        },
+        {
+          q: "How do I add a transaction correctly so reports stay clean?",
+          a:
+            "Use these steps for consistent records:\n" +
+            "1) Pick the correct type (Income vs Expense).\n" +
+            "2) Enter the amount carefully (avoid extra zeros).\n" +
+            "3) Select the most accurate category.\n" +
+            "4) Use the real transaction date (not the day you remember it).\n" +
+            "5) Write a specific description (e.g., “Lunch - Chicken rice” instead of “Food”).\n\n" +
+            "Consistency helps your charts and monthly summaries make sense.",
+        },
+        {
+          q: "How do I fix mistakes in a transaction?",
+          a:
+            "No problem—just edit it.\n" +
+            "1) Open Transactions\n" +
+            "2) Find the incorrect item\n" +
+            "3) Click Edit\n" +
+            "4) Update amount/type/category/date/description\n" +
+            "5) Save — the Dashboard recalculates automatically.",
+        },
+        {
+          q: "How do I understand the Dashboard and charts?",
+          a:
+            "The Dashboard is a summary view:\n" +
+            "• Total Income: all money received\n" +
+            "• Total Expense: all money spent\n" +
+            "• Balance: income minus expense\n" +
+            "• Category chart: where your spending is highest\n\n" +
+            "If something looks wrong, check whether a transaction was marked as Income vs Expense, or whether its category/date is correct.",
+        },
+      ],
+
+      // ✅ NEW CATEGORY (replacing Payment & Billing)
+      features: [
+        {
+          q: "What are the main features of ClearSpend?",
+          a:
+            "ClearSpend focuses on simple expense tracking and clear summaries.\n" +
+            "Key features include:\n" +
+            "• Adding income and expense transactions\n" +
+            "• Creating and managing categories\n" +
+            "• Viewing dashboard totals and charts\n" +
+            "• Searching transactions (if implemented in your Transactions page)\n\n" +
+            "As you improve the project, you can add export, backup, and budgeting tools as advanced features.",
+        },
+        {
+          q: "How do categories help me track spending more accurately?",
+          a:
+            "Categories organize your spending so your dashboard can show meaningful insights.\n" +
+            "To use categories well:\n" +
+            "1) Create categories that match your lifestyle (Food, Transport, Bills).\n" +
+            "2) Use the same category consistently for the same type of expense.\n" +
+            "3) Avoid creating too many categories too early.\n\n" +
+            "This makes charts clearer and helps you spot where your money goes most.",
+        },
+        {
+          q: "Can I export my data to Excel or CSV?",
+          a:
+            "Export is not included by default in many learning versions.\n\n" +
+            "If you want to add it later, a common approach is:\n" +
+            "1) Convert your transaction list into a table format\n" +
+            "2) Export as CSV (simple) or XLSX (more advanced)\n" +
+            "3) Use a library like 'xlsx' for Excel exports\n\n" +
+            "For now, the best focus is making your tracking and dashboard stable first.",
+        },
+        {
+          q: "Will my data stay saved after I refresh the page?",
+          a:
+            "It depends on your storage setup.\n\n" +
+            "• If your project only uses React state/Redux without persistence, data can reset after refresh.\n" +
+            "• If you add persistence (localStorage or Firebase), your data can remain saved.\n\n" +
+            "A good next step for learning is saving Redux state into localStorage.",
+        },
+        {
+          q: "Can I customize the dashboard to show different charts?",
+          a:
+            "Yes, you can customize it depending on your implementation.\n" +
+            "Common chart upgrades include:\n" +
+            "• Spending by category (pie/doughnut chart)\n" +
+            "• Income vs expense over time (line chart)\n" +
+            "• Monthly totals (bar chart)\n\n" +
+            "Start simple: one category chart + totals is already a strong foundation.",
+        },
+      ],
+
+      security: [
+        {
+          q: "Where is my data stored?",
+          a:
+            "In a basic learning version, data is typically stored locally (Redux state or browser storage).\n\n" +
+            "If you later add Firebase, you can store data in the cloud with authentication and user-based access rules.",
+        },
+        {
+          q: "What happens if I clear my browser data?",
+          a:
+            "If your app stores data locally, clearing browser storage can remove saved transactions.\n\n" +
+            "To prevent this, you can implement cloud backup (future feature) or export your data.",
+        },
+        {
+          q: "Is my data shared with anyone?",
+          a:
+            "No. ClearSpend should not share your financial data with third parties.\n\n" +
+            "Your data is only used to display your personal dashboard and transaction history.",
+        },
+        {
+          q: "Can I use the app offline?",
+          a:
+            "Yes—if your data is stored locally, the app can work offline after it loads.\n\n" +
+            "Cloud sync features require internet because they communicate with a server.",
+        },
+        {
+          q: "How can cloud backup stay secure (if I add it later)?",
+          a:
+            "A secure cloud setup typically includes:\n" +
+            "1) User authentication (login)\n" +
+            "2) Encrypted storage\n" +
+            "3) Security rules: each user can only access their own data\n\n" +
+            "This prevents other users from reading or changing your records.",
+        },
+      ],
+
+      account: [
+        {
+          q: "Do I need an account to use ClearSpend?",
+          a:
+            "Not necessarily. Many learning projects let you use the app without login.\n\n" +
+            "An account is usually required only if you add multi-device sync or cloud backup later.",
+        },
+        {
+          q: "How do I reset everything and start from zero?",
+          a:
+            "There are two common approaches:\n" +
+            "• Delete transactions individually (safe and controlled)\n" +
+            "• Clear browser storage (full reset if you store locally)\n\n" +
+            "If you build a “Clear All” button, it’s the easiest option for users.",
+        },
+        {
+          q: "Can I change a transaction category after it’s created?",
+          a:
+            "Yes.\n" +
+            "1) Go to Transactions\n" +
+            "2) Click Edit on the transaction\n" +
+            "3) Change the category\n" +
+            "4) Save — charts update automatically.",
+        },
+        {
+          q: "Will new features be added in future updates?",
+          a:
+            "Yes. Common updates include:\n" +
+            "• Export to CSV/Excel\n" +
+            "• Cloud backup\n" +
+            "• Multi-device sync\n" +
+            "• Improved analytics\n\n" +
+            "Your existing data can stay compatible if you keep consistent fields (type, amount, date, category, description).",
+        },
+        {
+          q: "What technologies power this application?",
+          a:
+            "ClearSpend is built using:\n" +
+            "• React for the UI\n" +
+            "• Redux Toolkit/Redux for state management\n" +
+            "• React Router for navigation\n" +
+            "• Chart.js for charts\n" +
+            "• Tailwind CSS for styling",
+        },
+      ],
+    }),
+    []
+  );
+
+  /* ===============================
+     3) STATE (useState)
+  =============================== */
+  const [activeCat, setActiveCat] = useState("general");
+  const [openIndex, setOpenIndex] = useState(null);
+  const [search, setSearch] = useState("");
+
+  /* ===============================
+     4) FILTER QUESTIONS (within selected category)
+  =============================== */
+  const items = useMemo(() => {
+    const list = faqData[activeCat] || [];
+    const q = (search || "").trim().toLowerCase();
+    if (!q) return list;
+
+    return list.filter(
+      (x) => x.q.toLowerCase().includes(q) || x.a.toLowerCase().includes(q)
+    );
+  }, [faqData, activeCat, search]);
+
+  /* ===============================
+     5) ACCORDION TOGGLE
+  =============================== */
+  const toggle = (idx) => {
+    setOpenIndex((prev) => (prev === idx ? null : idx));
   };
 
-  // FAQ Data
-  const faqs = [
-    {
-      question: "Apa itu ClearSpend?",
-      answer: "ClearSpend adalah aplikasi expense tracker yang membantu Anda melacak pengeluaran dan pemasukan dengan mudah. Aplikasi ini dibangun dengan React dan Redux untuk pembelajaran state management."
-    },
-    {
-      question: "Bagaimana cara menambahkan transaksi?",
-      answer: "Kunjungi halaman Transactions, klik tombol 'Add Transaction', lalu isi form dengan detail transaksi (tipe, jumlah, deskripsi, tanggal, dan kategori). Klik 'Save' untuk menyimpan."
-    },
-    {
-      question: "Apakah data saya disimpan secara permanen?",
-      answer: "Saat ini aplikasi menggunakan Redux untuk state management tanpa backend. Data akan hilang saat refresh halaman. Untuk menyimpan data permanen, perlu integrasi dengan database atau localStorage."
-    },
-    {
-      question: "Bagaimana cara membuat kategori baru?",
-      answer: "Pergi ke halaman Categories, klik 'Add Category', masukkan nama kategori baru, lalu simpan. Kategori ini akan tersedia saat menambahkan transaksi."
-    },
-    {
-      question: "Apa fungsi Dashboard?",
-      answer: "Dashboard menampilkan ringkasan keuangan Anda dalam bentuk angka dan grafik (chart). Anda bisa melihat total income, expenses, balance, dan visualisasi pengeluaran per kategori."
-    },
-    {
-      question: "Bagaimana cara mengedit atau menghapus transaksi?",
-      answer: "Di halaman Transactions, setiap baris memiliki button 'Edit' dan 'Delete'. Klik Edit untuk mengubah data, atau Delete untuk menghapus transaksi."
-    },
-    {
-      question: "Teknologi apa yang digunakan?",
-      answer: "Aplikasi ini dibangun dengan React 19, Redux Toolkit untuk state management, React Router untuk navigasi, Chart.js untuk visualisasi data, dan Tailwind CSS untuk styling."
-    },
-    {
-      question: "Apakah aplikasi ini responsive?",
-      answer: "Ya, aplikasi ini menggunakan Tailwind CSS dengan responsive design. Dapat diakses dari desktop maupun mobile device dengan layout yang menyesuaikan."
-    },
-    {
-      question: "Bagaimana cara filter transaksi?",
-      answer: "Di halaman Transactions, gunakan search bar untuk mencari berdasarkan deskripsi, atau pilih kategori dari dropdown filter untuk melihat transaksi spesifik."
-    },
-    {
-      question: "Apakah bisa export data ke Excel/CSV?",
-      answer: "Fitur export belum tersedia dalam versi ini. Ini bisa menjadi enhancement untuk versi mendatang dengan menambahkan library seperti xlsx atau csv-parser."
-    }
-  ];
-
   return (
-    <div className="max-w-4xl mx-auto p-6">
-      
-      {/* ===================  HEADER =================== */}
-      <section className="border-2 border-black p-8 mb-6 text-center bg-white">
-        <h1 className="text-4xl font-bold mb-3">
-          ❓ Frequently Asked Questions
-        </h1>
-        <p className="text-gray-600">
-          Temukan jawaban untuk pertanyaan umum tentang ClearSpend
-        </p>
-      </section>
-
-      {/* ===================  FAQ ACCORDION =================== */}
-      <section className="border-2 border-black p-6 bg-white">
-        <div className="space-y-3">
-          {faqs.map((faq, index) => (
-            <div 
-              key={index} 
-              className="border border-gray-400 overflow-hidden"
-            >
-              
-              {/* FAQ Question - Clickable */}
-              <button
-                onClick={() => toggleFAQ(index)}
-                className="w-full text-left p-4 hover:bg-gray-50 transition flex justify-between items-center"
-              >
-                <span className="font-semibold text-gray-800">
-                  {index + 1}. {faq.question}
-                </span>
-                <span className="text-2xl text-gray-500">
-                  {openFAQ === index ? '−' : '+'}
-                </span>
-              </button>
-
-              {/* FAQ Answer - Expandable */}
-              {openFAQ === index && (
-                <div className="p-4 bg-gray-50 border-t border-gray-300">
-                  <p className="text-gray-700 leading-relaxed">
-                    {faq.answer}
-                  </p>
-                </div>
-              )}
-              
-            </div>
-          ))}
-        </div>
-
-        {/* Info Footer */}
-        <div className="mt-6 pt-6 border-t-2 border-gray-300">
-          <p className="text-sm text-gray-500 text-center">
-            💡 Masih ada pertanyaan? Silakan hubungi tim development atau instruktur
+    <div className="min-h-screen bg-gray-100">
+      {/* ===== Top header ===== */}
+      <div className="bg-orange-400">
+        <div className="max-w-5xl mx-auto px-6 pt-14 pb-28 text-center">
+          <h1 className="text-white text-3xl md:text-4xl font-semibold">
+            Frequently Asked Questions
+          </h1>
+          <p className="text-white/90 text-sm md:text-base mt-3 max-w-2xl mx-auto">
+            Choose a category, search a topic, then click a question to see a step-by-step answer.
           </p>
+
+          {/* Search input */}
+          <div className="mt-6 max-w-xl mx-auto">
+            <div className="relative">
+              <input
+                value={search}
+                onChange={(e) => {
+                  setSearch(e.target.value);
+                  setOpenIndex(null); // close accordion while searching
+                }}
+                placeholder="Search questions..."
+                className="w-full rounded-lg bg-white/20 text-white placeholder:text-white/80 px-4 py-3 outline-none border border-white/30 focus:bg-white/25"
+              />
+              {search.trim() ? (
+                <button
+                  type="button"
+                  onClick={() => {
+                    setSearch("");
+                    setOpenIndex(null);
+                  }}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-white/90 hover:text-white text-sm"
+                >
+                  Clear
+                </button>
+              ) : null}
+            </div>
+          </div>
         </div>
-      </section>
-
-      {/* ===================  TECHNICAL INFO =================== */}
-      <section className="border-2 border-black p-6 mt-6 bg-white">
-        <h2 className="text-2xl font-bold mb-4 border-b-2 border-gray-300 pb-2">
-          📚 Technical Information
-        </h2>
-        
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          
-          <div className="border border-gray-400 p-4">
-            <h3 className="font-bold mb-2 text-lg">🛠️ Tech Stack</h3>
-            <ul className="text-sm text-gray-700 space-y-1">
-              <li>• React 19</li>
-              <li>• Redux Toolkit + Redux Thunk</li>
-              <li>• React Router DOM</li>
-              <li>• Chart.js</li>
-              <li>• Tailwind CSS</li>
-              <li>• Vite</li>
-            </ul>
-          </div>
-
-          <div className="border border-gray-400 p-4">
-            <h3 className="font-bold mb-2 text-lg">📦 Features</h3>
-            <ul className="text-sm text-gray-700 space-y-1">
-              <li>• Transaction CRUD</li>
-              <li>• Category Management</li>
-              <li>• Dashboard with Charts</li>
-              <li>• Search & Filter</li>
-              <li>• Responsive Design</li>
-              <li>• Redux State Management</li>
-            </ul>
-          </div>
-
-          <div className="border border-gray-400 p-4">
-            <h3 className="font-bold mb-2 text-lg">👥 Team</h3>
-            <ul className="text-sm text-gray-700 space-y-1">
-              <li>• Person 1: Landing Page</li>
-              <li>• Person 2: Dashboard</li>
-              <li>• Person 3: Transactions</li>
-              <li>• Person 4: Categories</li>
-              <li>• Person 5: FAQ Page</li>
-            </ul>
-          </div>
-
-          <div className="border border-gray-400 p-4">
-            <h3 className="font-bold mb-2 text-lg">🎯 Learning Goals</h3>
-            <ul className="text-sm text-gray-700 space-y-1">
-              <li>• Redux & Redux Thunk</li>
-              <li>• React Hooks (useState, useEffect)</li>
-              <li>• Component Architecture</li>
-              <li>• State Management</li>
-              <li>• Data Visualization</li>
-            </ul>
-          </div>
-
-        </div>
-      </section>
-
-      {/* Code Implementation Note */}
-      <div className="mt-6 p-4 bg-gray-100 border border-gray-400 rounded">
-        <p className="text-xs text-gray-600">
-          <strong>💡 Implementation Note:</strong> FAQ Page ini menggunakan <code className="bg-white px-1">useState</code> untuk 
-          handle accordion state (expand/collapse). Setiap FAQ item adalah component yang clickable, dan state 
-          menentukan apakah jawaban ditampilkan atau tidak.
-        </p>
       </div>
 
+      {/* ===== Main card area ===== */}
+      <div className="-mt-20 max-w-5xl mx-auto px-6 pb-16 relative z-10">
+        {/* Category cards */}
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+          {categories.map((cat) => {
+            const active = cat.id === activeCat;
+            return (
+              <button
+                key={cat.id}
+                type="button"
+                onClick={() => {
+                  setActiveCat(cat.id);
+                  setOpenIndex(null);
+                  setSearch(""); // same behavior as before: reset search on category change
+                }}
+                className={[
+                  "rounded-xl bg-white shadow-sm border transition p-4 text-left",
+                  active
+                    ? "border-orange-400 ring-2 ring-orange-200"
+                    : "border-gray-200 hover:border-gray-300",
+                ].join(" ")}
+              >
+                <div className="text-2xl">{cat.icon}</div>
+                <div className="mt-2 text-sm font-semibold text-gray-800">
+                  {cat.label}
+                </div>
+              </button>
+            );
+          })}
+        </div>
+
+        {/* Accordion list */}
+        <div className="mt-6 space-y-4">
+          {items.map((faq, idx) => {
+            const open = openIndex === idx;
+            return (
+              <div
+                key={faq.q}
+                className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden"
+              >
+                <button
+                  type="button"
+                  onClick={() => toggle(idx)}
+                  className="w-full px-5 py-4 flex items-center justify-between text-left"
+                >
+                  <span className="text-gray-700 font-medium">{faq.q}</span>
+
+                  <span
+                    className={[
+                      "w-9 h-9 rounded-full flex items-center justify-center border transition",
+                      open
+                        ? "bg-gray-100 border-gray-300"
+                        : "bg-orange-400 border-orange-400",
+                    ].join(" ")}
+                  >
+                    <span
+                      className={[
+                        "text-sm transition-transform",
+                        open ? "text-gray-700 rotate-180" : "text-white rotate-0",
+                      ].join(" ")}
+                    >
+                      ˅
+                    </span>
+                  </span>
+                </button>
+
+                {open && (
+                  <div className="px-5 pb-5 -mt-1">
+                    <p className="text-sm text-gray-600 leading-relaxed whitespace-pre-line">
+                      {faq.a}
+                    </p>
+                  </div>
+                )}
+              </div>
+            );
+          })}
+
+          {items.length === 0 && (
+            <div className="bg-white rounded-xl border border-gray-200 p-6 text-sm text-gray-600">
+              No questions found for “{search}”.
+            </div>
+          )}
+        </div>
+      </div>
     </div>
   );
 }
-
-export default FAQPage;

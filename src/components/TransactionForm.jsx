@@ -2,8 +2,61 @@
 // PERSON: Person 3
 // KAPAN DIISI: Phase 3 - Saat mengerjakan TransactionsPage
 // DIGUNAKAN DI: TransactionsPage.jsx
+import React from 'react';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { useForm } from 'react-hook-form';
+import { z } from 'zod';
+import { format } from 'date-fns';
+import { Calendar as CalendarIcon, Tag } from 'lucide-react';
 
-import { useState } from "react";
+// Import Shadcn UI Components
+import { Button } from '../components/ui/button';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from '../components/ui/dialog';
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from '../components/ui/form';
+import { Input } from '../components/ui/input';
+import { RadioGroup, RadioGroupItem } from '../components/ui/radio-group';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '../components/ui/select';
+import { Popover, PopoverContent, PopoverTrigger } from '../components/ui/popover';
+import { Calendar } from '../components/ui/calendar';
+import { cn } from '../lib/utils';
+
+// Import Context Icons
+import { ICON_MAP } from '../store/transactionSlice';
+
+// Skema Validasi dengan Zod
+const formSchema = z.object({
+  type: z.enum(['income', 'expense'], {
+    required_error: 'Pilih tipe transaksi.',
+  }),
+  description: z.string().min(2, 'Deskripsi minimal 2 karakter.'),
+  amount: z.coerce.number().positive('Jumlah harus positif.'),
+  date: z.date({
+    required_error: 'Pilih tanggal.',
+  }),
+  category: z.string({
+    required_error: 'Pilih kategori.',
+  }),
+});
 
 function TransactionForm({
   isOpen,
@@ -12,156 +65,195 @@ function TransactionForm({
   editingTransaction,
   categories,
 }) {
-  const [formData, setFormData] = useState({
-    type: editingTransaction?.type || "expense",
-    description: editingTransaction?.description || "",
-    amount: editingTransaction?.amount || "",
-    date: editingTransaction?.date || new Date().toISOString().split("T")[0],
-    category: editingTransaction?.category || "",
+  // Inisialisasi React Hook Form
+  const form = useForm({
+    resolver: zodResolver(formSchema),
+    defaultValues: {
+      type: 'expense',
+      description: '',
+      amount: 0,
+      date: new Date(),
+      category: '',
+    },
   });
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
+  // Reset form saat editingTransaction berubah (Fix Bug Edit)
+  React.useEffect(() => {
+    if (editingTransaction) {
+      form.reset({
+        ...editingTransaction,
+        date: new Date(editingTransaction.date),
+        amount: Number(editingTransaction.amount)
+      });
+    } else {
+      form.reset({
+        type: 'expense',
+        description: '',
+        amount: 0,
+        date: new Date(),
+        category: '',
+      });
+    }
+  }, [editingTransaction, form]);
+
+  const onSubmit = (data) => {
     onSave({
-      ...formData,
-      amount: parseFloat(formData.amount),
+      ...data,
       id: editingTransaction?.id,
+      // Format tanggal kembali ke string ISO untuk Redux/Database
+      date: format(data.date, 'yyyy-MM-dd'),
     });
     onClose();
   };
 
-  if (!isOpen) return null;
-
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-      <div className="bg-white p-6 rounded-lg border-4 border-red-500 max-w-md w-full mx-4">
-        <h3 className="text-xl font-bold mb-4">
-          {editingTransaction ? "EDIT TRANSACTION" : "ADD TRANSACTION"}
-        </h3>
+    <Dialog open={isOpen} onOpenChange={onClose}>
+      <DialogContent className="sm:max-w-[480px]">
+        <DialogHeader>
+          <DialogTitle>
+            {editingTransaction ? "Edit Transaksi" : "Tambah Transaksi"}
+          </DialogTitle>
+          <DialogDescription>
+            {editingTransaction ? "Perbarui detail transaksi Anda." : "Catat pengeluaran atau pemasukan baru Anda."}
+          </DialogDescription>
+        </DialogHeader>
 
-        <form onSubmit={handleSubmit} className="space-y-4">
-          {/* Transaction Type */}
-          <div className="border-2 border-purple-300 p-3">
-            <label className="block mb-2 font-semibold">Transaction Type</label>
-            <div className="flex gap-4">
-              <label className="flex items-center">
-                <input
-                  type="radio"
-                  value="income"
-                  checked={formData.type === "income"}
-                  onChange={(e) =>
-                    setFormData({ ...formData, type: e.target.value })
-                  }
-                  className="mr-2"
-                />
-                Income
-              </label>
-              <label className="flex items-center">
-                <input
-                  type="radio"
-                  value="expense"
-                  checked={formData.type === "expense"}
-                  onChange={(e) =>
-                    setFormData({ ...formData, type: e.target.value })
-                  }
-                  className="mr-2"
-                />
-                Expense
-              </label>
+        <Form {...form}>
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+            {/* Tipe Transaksi */}
+            <FormField
+              control={form.control}
+              name="type"
+              render={({ field }) => (
+                <FormItem className="space-y-3">
+                  <FormLabel>Tipe</FormLabel>
+                  <FormControl>
+                    <RadioGroup
+                      onValueChange={field.onChange}
+                      value={field.value}
+                      className="flex space-x-4"
+                    >
+                      <FormItem className="flex items-center space-x-2 space-y-0">
+                        <FormControl><RadioGroupItem value="income" /></FormControl>
+                        <FormLabel className="font-normal">Income</FormLabel>
+                      </FormItem>
+                      <FormItem className="flex items-center space-x-2 space-y-0">
+                        <FormControl><RadioGroupItem value="expense" /></FormControl>
+                        <FormLabel className="font-normal">Expense</FormLabel>
+                      </FormItem>
+                    </RadioGroup>
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            {/* Deskripsi */}
+            <FormField
+              control={form.control}
+              name="description"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Deskripsi</FormLabel>
+                  <FormControl>
+                    <Input placeholder="e.g. Makan Siang" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <div className="grid grid-cols-2 gap-4">
+              {/* Jumlah */}
+              <FormField
+                control={form.control}
+                name="amount"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Jumlah (Rp)</FormLabel>
+                    <FormControl>
+                      <Input type="number" placeholder="0" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              {/* Tanggal */}
+              <FormField
+                control={form.control}
+                name="date"
+                render={({ field }) => (
+                  <FormItem className="flex flex-col pt-2">
+                    <FormLabel className='mb-[10px]'>Tanggal</FormLabel>
+                    <Popover>
+                      <PopoverTrigger asChild>
+                        <FormControl>
+                          <Button
+                            variant={'outline'}
+                            className={cn('w-full pl-3 text-left font-normal', !field.value && 'text-muted-foreground')}
+                          >
+                            {field.value ? format(field.value, 'PPP') : <span>Pilih tanggal</span>}
+                            <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                          </Button>
+                        </FormControl>
+                      </PopoverTrigger>
+                      <PopoverContent className="w-auto p-0" align="start">
+                        <Calendar
+                          mode="single"
+                          selected={field.value}
+                          onSelect={field.onChange}
+                          disabled={(date) => date > new Date() || date < new Date('1900-01-01')}
+                        />
+                      </PopoverContent>
+                    </Popover>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
             </div>
-          </div>
-
-          {/* Description */}
-          <div className="border-2 border-purple-300 p-3">
-            <label className="block mb-2 font-semibold">Description</label>
-            <input
-              type="text"
-              required
-              value={formData.description}
-              onChange={(e) =>
-                setFormData({ ...formData, description: e.target.value })
-              }
-              className="w-full border p-2 rounded"
-              placeholder="e.g., Dinner with friends"
+            
+            {/* Kategori */}
+            <FormField
+              control={form.control}
+              name="category"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Kategori</FormLabel>
+                  <Select onValueChange={field.onChange} value={field.value}>
+                    <FormControl>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Pilih kategori" />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      {categories.map(cat => (
+                        <SelectItem key={cat.id} value={cat.name}>
+                          <div className="flex items-center gap-2">
+                            {/* [TAMBAHAN]: Render icon jika tersedia di ICON_MAP */}
+                            {ICON_MAP && ICON_MAP[cat.icon] ? 
+                              React.createElement(ICON_MAP[cat.icon], { className: "h-4 w-4" }) : 
+                              <Tag className="h-4 w-4" />
+                            }
+                            {cat.name}
+                          </div>
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  <FormMessage />
+                </FormItem>
+              )}
             />
-          </div>
 
-          {/* Amount */}
-          <div className="border-2 border-purple-300 p-3">
-            <label className="block mb-2 font-semibold">Amount (Rp)</label>
-            <input
-              type="number"
-              required
-              value={formData.amount}
-              onChange={(e) =>
-                setFormData({ ...formData, amount: e.target.value })
-              }
-              className="w-full border p-2 rounded"
-              placeholder="0"
-              min="0"
-              step="1"
-            />
-          </div>
-
-          {/* Date */}
-          <div className="border-2 border-purple-300 p-3">
-            <label className="block mb-2 font-semibold">Date</label>
-            <input
-              type="date"
-              required
-              value={formData.date}
-              onChange={(e) =>
-                setFormData({ ...formData, date: e.target.value })
-              }
-              className="w-full border p-2 rounded"
-            />
-          </div>
-
-          {/* Category */}
-          <div className="border-2 border-purple-300 p-3">
-            <label className="block mb-2 font-semibold">Category</label>
-            <select
-              required
-              value={formData.category}
-              onChange={(e) =>
-                setFormData({ ...formData, category: e.target.value })
-              }
-              className="w-full border p-2 rounded"
-            >
-              <option value="">Select a category</option>
-              {categories &&
-                categories.map((cat) => (
-                  <option key={cat.id} value={cat.name}>
-                    {cat.name}
-                  </option>
-                ))}
-            </select>
-          </div>
-
-          {/* Buttons */}
-          <div className="flex gap-2 pt-4">
-            <button
-              type="submit"
-              className="bg-green-600 text-white px-4 py-2 rounded flex-1 hover:bg-green-700"
-            >
-              Save
-            </button>
-            <button
-              type="button"
-              onClick={onClose}
-              className="bg-gray-500 text-white px-4 py-2 rounded flex-1 hover:bg-gray-600"
-            >
-              Cancel
-            </button>
-          </div>
-        </form>
-
-        <p className="text-xs text-gray-400 mt-4">
-          ⬆️ Form dengan useState untuk setiap field. onSave dispatch Redux
-          action
-        </p>
-      </div>
-    </div>
+            <DialogFooter className="pt-4 flex gap-2">
+              <Button type="button" variant="ghost" onClick={onClose} className="flex-1">Batal</Button>
+              <Button type="submit" className="flex-1">Simpan</Button>
+            </DialogFooter>
+          </form>
+        </Form>
+      </DialogContent>
+    </Dialog>
   );
 }
 
