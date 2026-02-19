@@ -127,9 +127,9 @@ function LandingPage() {
                   bg-gradient-to-br from-blue-300 to-blue-200 mb-3 leading-none">
               03
             </div>
-            <button onClick={()=> navigate("/categories")} 
+            <button onClick={()=> navigate("/dashboard")} 
             className="rounded-lg bg-blue-200 bg-blur-md border border-cyan-200 shadow-sm px-3 py-2 hover:bg-gray-100 font-medium text-sky-900">
-              Add Category <ArrowRight className="inline-block h-4 w-4 ml-1" /> 
+              Analyze Data <ArrowRight className="inline-block h-4 w-4 ml-1" /> 
             </button>              
             <div>
               <p className="mt-2 text-muted-foreground">See your financial summary visually in the Dashboard.</p>
