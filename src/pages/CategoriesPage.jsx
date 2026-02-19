@@ -121,21 +121,32 @@ function CategoriesPage() {
   };
 
   return (
-    <div className="flex flex-col gap-8 max-w-7xl mx-auto p-6">
+    <div className="flex flex-col gap-6 md:gap-8 max-w-7xl mx-auto p-4 sm:p-6">
       {/* Header with Error Display */}
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight">Categories</h1>
-          <p className="text-muted-foreground">
+          <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">
+            Categories
+          </h1>
+          <p className="text-sm sm:text-base text-muted-foreground">
             Atur kategori transaksi untuk pelaporan yang lebih baik.
           </p>
         </div>
 
         <Dialog open={showModal} onOpenChange={setShowModal}>
           <DialogTrigger asChild>
-            <Button onClick={handleAdd} disabled={isAdding}>
+            <Button
+              onClick={handleAdd}
+              disabled={isAdding}
+              className="w-full sm:w-auto"
+            >
               <Plus className="mr-2 h-4 w-4" />
-              {isAdding ? "Adding..." : "Add Category"}
+              <span className="hidden sm:inline">
+                {isAdding ? "Adding..." : "Add Category"}
+              </span>
+              <span className="sm:hidden">
+                {isAdding ? "Adding..." : "Add"}
+              </span>
             </Button>
           </DialogTrigger>
           <DialogContent>
@@ -162,13 +173,18 @@ function CategoriesPage() {
                 </p>
               </div>
             )}
-            <DialogFooter>
-              <Button variant="outline" onClick={handleCloseModal}>
+            <DialogFooter className="flex-col sm:flex-row gap-2">
+              <Button
+                variant="outline"
+                onClick={handleCloseModal}
+                className="w-full sm:w-auto"
+              >
                 Batal
               </Button>
               <Button
                 onClick={handleSave}
                 disabled={isAdding || isUpdating || !categoryName.trim()}
+                className="w-full sm:w-auto"
               >
                 {isAdding || isUpdating ? "Saving..." : "Simpan Kategori"}
               </Button>
@@ -231,25 +247,25 @@ function CategoriesPage() {
               </Button>
             </div>
           ) : (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-6">
               {categories.map((category) => (
-                <Card key={category.id} className="group overflow-hidden">
-                  <CardContent className="p-6">
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-4">
-                        <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center text-primary">
-                          <Tag className="h-6 w-6" />
+                <Card
+                  key={category.id}
+                  className="group overflow-hidden hover:shadow-md transition-shadow"
+                >
+                  <CardContent className="p-4 sm:p-6">
+                    <div className="flex items-center justify-between gap-2">
+                      <div className="flex items-center gap-3 min-w-0 flex-1">
+                        <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-primary/10 flex items-center justify-center text-primary flex-shrink-0">
+                          <Tag className="h-5 w-5 sm:h-6 sm:w-6" />
                         </div>
-                        <div>
-                          <h3 className="font-semibold text-lg">
+                        <div className="min-w-0 flex-1">
+                          <h3 className="font-semibold text-base sm:text-lg truncate">
                             {category.name}
                           </h3>
-                          {/* <p className="text-xs text-muted-foreground">
-                            ID: {category.id}
-                          </p> */}
                         </div>
                       </div>
-                      <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                      <div className="flex gap-1 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity flex-shrink-0">
                         <Button
                           variant="ghost"
                           size="icon"
