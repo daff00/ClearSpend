@@ -87,7 +87,12 @@ function TransactionsPage() {
       return matchSearch && matchCategory;
     })
     // SORTING: Memastikan data terbaru muncul paling atas
-    .sort((a, b) => new Date(b.date) - new Date(a.date));
+    .sort((a, b) => {
+      const dateDiff = new Date(b.date) - new Date(a.date);
+      if (dateDiff !== 0) return dateDiff;
+
+      return b.id - a.id;
+    });
 
   return (
     <div className="max-w-7xl mx-auto p-6 space-y-6">
