@@ -1,33 +1,43 @@
 // ═══════════════════════════════════════════════════════════════════════
-// 📄 FILE: categorySlice.js - REDUX BEST PRACTICES IMPLEMENTATION
+// FILE: categorySlice.js — Redux Slice for Categories
 // ═══════════════════════════════════════════════════════════════════════
-// 👤 PERSON: Person 4 (Categories Page)
-// 🎯 PURPOSE: Global state management untuk CATEGORIES data
-// 📊 POIN: Redux (4pts) + Redux Thunk (5pts) = 9 POIN!
+// PERSON: Person 4 (Categories Page)
 //
-// 🏆 BEST PRACTICES IMPLEMENTED:
-// ✅ Per-operation loading states (isAdding, isUpdating, isDeleting)
-// ✅ Async thunks untuk semua CRUD operations
-// ✅ Proper error handling dengan error messages per operation
-// ✅ Optimistic updates (cepat update UI, rollback jika error)
-// ✅ Validation di Redux layer
-// ✅ Separated concerns: Redux = data, useState = UI
+// WHAT THIS FILE DOES:
+// Manages all category data for the entire app using Redux.
+// Every component that needs category data reads from here.
+//
+// BEST PRACTICES USED:
+// ✅ Separate loading state per operation (isAdding, isUpdating, isDeleting)
+//    → So the UI knows exactly which button to show as "loading"
+// ✅ Async thunks for all CRUD operations
+//    → The store handles the async logic, not the component
+// ✅ Separate error per operation (addError, updateError, deleteError)
+//    → So error messages appear in the right place
+// ✅ Validation inside the thunk (before touching the reducer)
+//    → Catches bad input before it ever reaches the state
 // ═══════════════════════════════════════════════════════════════════════
 
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import categoriesData from "../data/categories.json";
 
 // ═══════════════════════════════════════════════════════════════════════
-// 🔄 ASYNC THUNKS - Semua CRUD operations dengan proper async handling
+// ASYNC THUNKS — All 4 CRUD operations are async
+//
+// WHY USE THUNKS FOR CRUD HERE?
+// In a real app, saving or deleting data requires an API call that takes
+// time. We use thunks so Redux can wait for the operation to finish,
+// then update the state with the result (or the error).
 // ═══════════════════════════════════════════════════════════════════════
 
 /**
- * 📥 FETCH CATEGORIES - Load semua categories dari data source
+ * FETCH CATEGORIES
+ * Loads all categories when the page first opens.
  *
- * Best Practice:
- * - Hanya fetch jika status = 'idle' (prevent duplicate fetches)
- * - Simulate API call dengan setTimeout (ganti dengan real API later)
- * - Return data lengkap, bukan mutate state langsung
+ * - Only runs when status = 'idle' (checked in the component with useEffect)
+ * - Simulates an API delay of 300ms
+ * - On success  → extraReducer saves the data to state.items
+ * - On failure  → extraReducer saves the error to state.error
  */
 export const fetchCategories = createAsyncThunk(
   "categories/fetchCategories",
@@ -46,16 +56,20 @@ export const fetchCategories = createAsyncThunk(
 );
 
 /**
- * ➕ ADD CATEGORY - Tambah category baru dengan validation
+ * ADD CATEGORY
+ * Creates a new category after passing two validation checks.
  *
- * Best Practice:
- * - Validation di thunk level (before hitting reducer)
- * - Check duplicate name (case insensitive)
- * - Return new category object dengan ID auto-generated
- * - Error handling dengan rejectWithValue
+ * Validation (runs before saving):
+ * 1. The name must not be empty
+ * 2. The name must not already exist (case insensitive check)
+ *
+ * getState() lets us read the current categories list from inside the thunk
+ * so we can check for duplicates without making an extra request.
+ *
+ * - On success  → extraReducer pushes the new category to state.items
+ * - On failure  → extraReducer saves the message to state.addError
  *
  * @param {Object} categoryData - { name: string }
- * @param {Object} thunkAPI - Access to getState() untuk validation
  */
 export const addCategoryAsync = createAsyncThunk(
   "categories/addCategory",
@@ -97,13 +111,16 @@ export const addCategoryAsync = createAsyncThunk(
 );
 
 /**
- * ✏️ UPDATE CATEGORY - Update existing category dengan validation
+ * UPDATE CATEGORY
+ * Saves a new name for an existing category after validation.
  *
- * Best Practice:
- * - Validate ID exists
- * - Check duplicate name (exclude current category)
- * - Return updated category object
- * - Optimistic update: UI updates immediately, rollback on error
+ * Validation (runs before saving):
+ * 1. The category ID must exist in the list
+ * 2. The new name must not be empty
+ * 3. The new name must not already be used by a DIFFERENT category
+ *
+ * - On success  → extraReducer finds the category by ID and replaces it
+ * - On failure  → extraReducer saves the message to state.updateError
  *
  * @param {Object} categoryData - { id: number, name: string }
  */
@@ -154,14 +171,18 @@ export const updateCategoryAsync = createAsyncThunk(
 );
 
 /**
- * 🗑️ DELETE CATEGORY - Hapus category dengan confirmation
+ * DELETE CATEGORY
+ * Removes a category by its ID.
  *
- * Best Practice:
- * - Validate category exists before delete
- * - Return deleted ID untuk remove dari state
- * - Optimistic update support
+ * Validation:
+ * - The category must exist before we try to delete it
  *
- * @param {number} categoryId - ID category yang akan dihapus
+ * Returns the ID on success so the extraReducer knows which item to remove.
+ *
+ * - On success  → extraReducer filters out the item with matching ID
+ * - On failure  → extraReducer saves the message to state.deleteError
+ *
+ * @param {number} categoryId - The ID of the category to delete
  */
 export const deleteCategoryAsync = createAsyncThunk(
   "categories/deleteCategory",
@@ -183,7 +204,7 @@ export const deleteCategoryAsync = createAsyncThunk(
         }, 500);
       });
 
-      return categoryId; // Return ID untuk remove dari state
+      return categoryId; // Return the ID so the reducer knows which item to remove
     } catch (error) {
       return rejectWithValue(error.message || "Failed to delete category");
     }
@@ -191,33 +212,36 @@ export const deleteCategoryAsync = createAsyncThunk(
 );
 
 // ═══════════════════════════════════════════════════════════════════════
-// 🗂️ CATEGORY SLICE - State management dengan best practices
+// THE SLICE — Initial State + Reducers + Extra Reducers
 // ═══════════════════════════════════════════════════════════════════════
 
 const categorySlice = createSlice({
   name: "categories",
 
-  // 📊 INITIAL STATE - Best Practice: Separate loading states per operation
+  // INITIAL STATE
+  // This is what the categories data looks like when the app first loads.
+  // We use separate loading and error fields per operation so the UI can
+  // show the right feedback for each button independently.
   initialState: {
-    // Data
-    items: [], // Array of categories: [{ id: 1, name: "Food" }, ...]
+    items: [], // array of categories: [{ id: 1, name: "Food" }, ...]
 
-    // Loading States - Per Operation (Best Practice!)
-    status: "idle", // 'idle' | 'loading' | 'succeeded' | 'failed' (untuk fetch)
-    isAdding: false, // Loading state untuk add operation
-    isUpdating: false, // Loading state untuk update operation
-    isDeleting: false, // Loading state untuk delete operation
+    // Loading flags — only one operation runs at a time
+    status: "idle", // for the initial fetch: "idle" | "loading" | "succeeded" | "failed"
+    isAdding: false, // true while addCategoryAsync is running
+    isUpdating: false, // true while updateCategoryAsync is running
+    isDeleting: false, // true while deleteCategoryAsync is running
 
-    // Error States - Per Operation
-    error: null, // Error untuk fetch
-    addError: null, // Error untuk add
-    updateError: null, // Error untuk update
-    deleteError: null, // Error untuk delete
+    // Error fields — each operation has its own so errors show in the right place
+    error: null, // error from the initial fetch
+    addError: null, // error from addCategoryAsync
+    updateError: null, // error from updateCategoryAsync
+    deleteError: null, // error from deleteCategoryAsync
   },
 
-  // 🔧 REDUCERS - Synchronous actions (jarang dipakai karena kita pakai async thunks)
+  // SYNC REDUCERS
+  // These are simple, instant state updates — no async needed.
   reducers: {
-    // Action untuk clear errors
+    // Clears all error messages (call this after the user dismisses an error)
     clearErrors: (state) => {
       state.error = null;
       state.addError = null;
@@ -225,7 +249,7 @@ const categorySlice = createSlice({
       state.deleteError = null;
     },
 
-    // Action untuk reset state (if needed)
+    // Resets everything back to the initial state (useful for logout / cleanup)
     resetCategoriesState: (state) => {
       state.items = [];
       state.status = "idle";
@@ -239,10 +263,12 @@ const categorySlice = createSlice({
     },
   },
 
-  // 🔄 EXTRA REDUCERS - Handle async thunks dengan best practices
+  // EXTRA REDUCERS
+  // These handle the results of the async thunks above.
+  // Each thunk produces 3 possible outcomes: pending, fulfilled, rejected.
   extraReducers: (builder) => {
     // ─────────────────────────────────────────────
-    // 📥 FETCH CATEGORIES
+    // FETCH CATEGORIES
     // ─────────────────────────────────────────────
     builder
       .addCase(fetchCategories.pending, (state) => {
@@ -260,8 +286,8 @@ const categorySlice = createSlice({
       })
 
       // ─────────────────────────────────────────────
-      // ➕ ADD CATEGORY
-      // Best Practice: Separate loading state (isAdding)
+      // ADD CATEGORY
+      // isAdding = true while waiting → button shows "Saving..."
       // ─────────────────────────────────────────────
       .addCase(addCategoryAsync.pending, (state) => {
         state.isAdding = true;
@@ -278,8 +304,8 @@ const categorySlice = createSlice({
       })
 
       // ─────────────────────────────────────────────
-      // ✏️ UPDATE CATEGORY
-      // Best Practice: Optimistic update with rollback
+      // UPDATE CATEGORY
+      // isUpdating = true while waiting → edit button shows "Saving..."
       // ─────────────────────────────────────────────
       .addCase(updateCategoryAsync.pending, (state) => {
         state.isUpdating = true;
@@ -292,19 +318,18 @@ const categorySlice = createSlice({
           (cat) => cat.id === action.payload.id,
         );
         if (index !== -1) {
-          state.items[index] = action.payload;
+          state.items[index] = action.payload; // replace the old object with the updated one
         }
         state.updateError = null;
       })
       .addCase(updateCategoryAsync.rejected, (state, action) => {
         state.isUpdating = false;
         state.updateError = action.payload || action.error.message;
-        // Rollback logic bisa ditambahkan disini jika pakai optimistic update
       })
 
       // ─────────────────────────────────────────────
-      // 🗑️ DELETE CATEGORY
-      // Best Practice: Remove dari state after successful delete
+      // DELETE CATEGORY
+      // isDeleting = true while waiting → delete button shows "Menghapus..."
       // ─────────────────────────────────────────────
       .addCase(deleteCategoryAsync.pending, (state) => {
         state.isDeleting = true;
@@ -312,7 +337,7 @@ const categorySlice = createSlice({
       })
       .addCase(deleteCategoryAsync.fulfilled, (state, action) => {
         state.isDeleting = false;
-        // Remove category dari items
+        // action.payload is the deleted category's ID — filter it out of the list
         state.items = state.items.filter((cat) => cat.id !== action.payload);
         state.deleteError = null;
       })
@@ -324,17 +349,17 @@ const categorySlice = createSlice({
 });
 
 // ═══════════════════════════════════════════════════════════════════════
-// 📤 EXPORTS
+// EXPORTS
 // ═══════════════════════════════════════════════════════════════════════
 
-// Export sync actions
+// Export sync actions so components can dispatch them
 export const { clearErrors, resetCategoriesState } = categorySlice.actions;
 
-// Export reducer (untuk store configuration)
+// Export the reducer so index.js can register it in the store
 export default categorySlice.reducer;
 
 // ═══════════════════════════════════════════════════════════════════════
-// 📖 USAGE GUIDE - How to use in components
+// HOW TO USE THIS IN A COMPONENT:
 // ═══════════════════════════════════════════════════════════════════════
 //
 // import { useDispatch, useSelector } from 'react-redux';
@@ -346,32 +371,31 @@ export default categorySlice.reducer;
 //   clearErrors
 // } from '../store/categorySlice';
 //
-// // In component:
-// const dispatch = useDispatch();
-// const { items, status, isAdding, isUpdating, isDeleting, addError } =
-//   useSelector((state) => state.categories);
+// const dispatch   = useDispatch();
+// const categories = useSelector((state) => state.categories.items);
+// const isAdding   = useSelector((state) => state.categories.isAdding);
+// const addError   = useSelector((state) => state.categories.addError);
 //
-// // Fetch categories
+// // Load categories when the page opens:
 // dispatch(fetchCategories());
 //
-// // Add category
-// dispatch(addCategoryAsync({ name: "Food" }));
+// // Add a new category:
+// dispatch(addCategoryAsync({ name: "Travel" }));
 //
-// // Update category
+// // Update an existing category:
 // dispatch(updateCategoryAsync({ id: 1, name: "Food & Drinks" }));
 //
-// // Delete category
+// // Delete a category by ID:
 // dispatch(deleteCategoryAsync(1));
 //
-// // Clear errors
+// // Clear all error messages:
 // dispatch(clearErrors());
 //
+// TIP: Use .unwrap() to catch errors in the component:
+// try {
+//   await dispatch(addCategoryAsync({ name })).unwrap();
+//   setShowModal(false); // runs only if successful
+// } catch (error) {
+//   console.error(error); // runs only if rejected
+// }
 // ═══════════════════════════════════════════════════════════════════════
-// // Fetch categories:
-// dispatch(fetchCategories());
-//
-// // Add category:
-// dispatch(addCategory({ name: 'Entertainment' }));
-// ============================================================
-
-// 📚 BACA REDUX_GUIDE.md UNTUK PENJELASAN LENGKAP!

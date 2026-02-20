@@ -1,45 +1,60 @@
 // ============================================================
-// FILE INI: Redux Slice untuk mengelola STATE TRANSAKSI
+// FILE: transactionSlice.js — Redux Slice for Transactions
 // ============================================================
 //
-// APA ITU REDUX SLICE?
-// - Slice = potongan kecil dari Redux store
-// - Isinya: state + actions + reducers dalam 1 file
-// -Lebih simple dari Redux klasik (tidak perlu banyak file)
+// WHAT IS A SLICE?
+// A slice is one section of the Redux store. It bundles together:
+//   - The initial state (what data looks like at the start)
+//   - Reducers (functions that update the state)
+//   - Async thunks (for operations that need to wait, like fetching data)
 //
-// KEGUNAAN FILE INI:
-// - Menyimpan data transaksi (array of transactions)
-// - Menyediakan fungsi untuk CRUD (Create, Read, Update, Delete)
-// - Handle async operation (fetch data dari JSON/API)
+// THIS FILE HANDLES:
+//   - Storing the list of transactions
+//   - CRUD operations: Create, Read, Update, Delete
+//   - Fetching transaction data asynchronously
 // ============================================================
 
-// STEP 1: Import yang diperlukan
-// Baca REDUX_GUIDE.md untuk penjelasan detail!
-
-// 💡 TODO: Ketik manual 2 baris dibawah ini:
-// import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-// import transactionsData from "../data/transactions.json";
+// STEP 1: Import what we need
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import transactionsData from "../data/transactions.json";
-import { 
-  Briefcase, Utensils, Home, ShoppingCart, Car, Ticket, PiggyBank, Gift 
-} from 'lucide-react';
+import {
+  Briefcase,
+  Utensils,
+  Home,
+  ShoppingCart,
+  Car,
+  Ticket,
+  PiggyBank,
+  Gift,
+} from "lucide-react";
 
-// STEP 2: Buat Redux Thunk untuk FETCH DATA (5 POIN!)
-// Redux Thunk = fungsi async untuk ambil data dari API/JSON
-// Mengapa perlu? Karena Redux tidak bisa langsung handle async operation
+// ============================================================
+// STEP 2: ASYNC THUNK — fetchTransactions (Redux Thunk, 5 pts)
+//
+// WHAT IS A THUNK?
+// A thunk is an async function that runs before the reducer.
+// It is used when you need to wait for something (like an API call)
+// before updating the state.
+//
+// createAsyncThunk automatically creates 3 action types:
+//   - fetchTransactions.pending   → triggers when the fetch STARTS
+//   - fetchTransactions.fulfilled → triggers when the fetch SUCCEEDS
+//   - fetchTransactions.rejected  → triggers when the fetch FAILS
+// ============================================================
 export const fetchTransactions = createAsyncThunk(
   "transactions/fetchTransactions",
   async () => {
-    // Simulasi API call dengan delay
+    // Simulates a real API call with a 1 second delay.
+    // In a real app, replace this with: const res = await fetch('/api/transactions')
     return new Promise((resolve) => {
       setTimeout(() => {
         resolve(transactionsData);
       }, 1000);
-    })
-  }
-)
+    });
+  },
+);
 
+// Icon map — used to render icons by name stored as a string
 export const ICON_MAP = {
   Briefcase,
   Utensils,
@@ -49,57 +64,64 @@ export const ICON_MAP = {
   Ticket,
   PiggyBank,
   Gift,
-}
+};
 
-// STEP 3: Buat Slice dengan createSlice (4 POIN Redux!)
-// Slice = state + reducers dalam 1 object
+// ============================================================
+// STEP 3: CREATE THE SLICE — createSlice (Redux, 4 pts)
+//
+// This is the main Redux piece for transactions.
+// It defines what the data looks like and how it can change.
+// ============================================================
 const transactionSlice = createSlice({
   name: "transactions",
 
-  // Initial State, data awal saat app pertama kali load
+  // The starting data when the app first loads.
+  // items: empty array, filled later by fetchTransactions
+  // status: "idle" means nothing has started yet
   initialState: {
     items: [],
-    status: 'idle',
+    status: "idle", // "idle" | "loading" | "succeeded" | "failed"
     error: null,
   },
 
-  // Reducers untuk update state (synchronous)
+  // REDUCERS — synchronous state updates (no waiting needed)
+  // These are called directly when the user adds, edits, or deletes.
   reducers: {
-    // Action 1: Add Transaction
+    // Add a new transaction to the list
     addTransaction: (state, action) => {
       state.items.push({
         ...action.payload,
-        id: Date.now(),
+        id: Date.now(), // generates a unique ID using the current timestamp
       });
     },
 
-    // Action 2: Update Transaction
+    // Find a transaction by ID and replace it with new data
     updateTransaction: (state, action) => {
-      const index = state.items.findIndex((t) => t.id ===action.payload.id);
+      const index = state.items.findIndex((t) => t.id === action.payload.id);
       if (index !== -1) {
-        state.items[index] = action.payload; // replace dengan data baru
+        state.items[index] = action.payload;
       }
     },
 
-    // Action 3: Delete Transaction
+    // Remove the transaction that matches the given ID
     deleteTransaction: (state, action) => {
       state.items = state.items.filter((t) => t.id !== action.payload);
     },
   },
 
-  // Extra reducers: Handle Async actions dari Thunk
+  // EXTRA REDUCERS — handle the 3 states from the async thunk above
   extraReducers: (builder) => {
     builder
-      // Saat fetchTransactions PENDING (loading)
+      // Fetch just started — show a loading indicator in the UI
       .addCase(fetchTransactions.pending, (state) => {
         state.status = "loading";
       })
-      // Saat fetchTransactions FULFILLED (berhasil)
+      // Fetch succeeded — save the data and mark as done
       .addCase(fetchTransactions.fulfilled, (state, action) => {
         state.status = "succeeded";
         state.items = action.payload;
       })
-      // Saat fetchTransactions REJECTED (gagal)
+      // Fetch failed — save the error message to show in the UI
       .addCase(fetchTransactions.rejected, (state, action) => {
         state.status = "failed";
         state.error = action.error.message;
@@ -107,26 +129,32 @@ const transactionSlice = createSlice({
   },
 });
 
-// STEP 4: Export actions dan reducer
-// Actions = fungsi yang bisa di-dispatch dari component
-// Reducer = function untuk daftar ke store
-export const { addTransaction, updateTransaction, deleteTransaction } = transactionSlice.actions;
+// ============================================================
+// STEP 4: EXPORTS
+//
+// Export the sync actions so components can dispatch them.
+// Export the reducer so the store in index.js can register it.
+// ============================================================
+export const { addTransaction, updateTransaction, deleteTransaction } =
+  transactionSlice.actions;
 export default transactionSlice.reducer;
 
 // ============================================================
-// CARA MENGGUNAKAN DI COMPONENT:
+// HOW TO USE THIS IN A COMPONENT:
 // ============================================================
 // import { useDispatch, useSelector } from 'react-redux';
 // import { fetchTransactions, addTransaction } from '../store/transactionSlice';
 //
-// const dispatch = useDispatch();
-// const transactions = useSelector((state) => state.transactions.items);
+// const dispatch      = useDispatch();
+// const transactions  = useSelector((state) => state.transactions.items);
+// const status        = useSelector((state) => state.transactions.status);
 //
-// // Fetch data:
+// // Load transactions when the page opens:
 // dispatch(fetchTransactions());
 //
-// // Add transaction:
-// dispatch(addTransaction({ type: 'expense', amount: 50000, ... }));
+// // Add a new transaction:
+// dispatch(addTransaction({ type: 'expense', amount: 50000, description: 'Coffee' }));
+//
+// // Delete a transaction by ID:
+// dispatch(deleteTransaction(transactionId));
 // ============================================================
-
-// 📚 BACA REDUX_GUIDE.md UNTUK PENJELASAN LENGKAP!

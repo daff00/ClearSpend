@@ -1,49 +1,38 @@
 // ============================================================
-// FILE INI: REDUX STORE - Gudang Pusat untuk Semua Data
+// FILE: index.js — The Redux Store (Central Data Hub)
 // ============================================================
-// PERSON: Person 1 (setup awal), Person 3 & 4 (uncomment setelah slice selesai)
 //
-// APA ITU STORE?
-// - Store = Gudang yang menyimpan SEMUA STATE aplikasi
-// - Semua component bisa akses data dari sini
-// - Hanya ada 1 store untuk seluruh aplikasi
+// WHAT IS THE STORE?
+// The store is a single JavaScript object that holds ALL the data
+// for the entire app. Every component can read from it or update it.
+// There is only ONE store in the whole app.
 //
-// KEGUNAAN FILE INI:
-// - DAFTAR semua reducer dari slice-slice yang dibuat
-// - Connect slice ke store agar bisa dipakai di component
+// WHAT THIS FILE DOES:
+// - Creates the store using configureStore()
+// - Registers all the slices (transactions + categories)
 // ============================================================
 
 import { configureStore } from "@reduxjs/toolkit";
 
-// 💡 TODO: Setelah transactionSlice.js dan categorySlice.js selesai diisi,
-// uncomment 2 baris dibawah ini:
 import transactionReducer from "./transactionSlice";
 import categoryReducer from "./categorySlice";
 
 export const store = configureStore({
   reducer: {
-    // 💡 TODO: Setelah import reducers, uncomment 2 baris dibawah:
-    transactions: transactionReducer,  // ← State bisa diakses pakai state.transactions
-    categories: categoryReducer,        // ← State bisa diakses pakai state.categories
-    // Sementara kosong dulu, nanti diisi setelah slice selesai dibuat
+    // The key name here is what you use in useSelector inside components.
+    // e.g. useSelector((state) => state.transactions.items)
+    transactions: transactionReducer, // handles all transaction data
+    categories: categoryReducer, // handles all category data
   },
 });
 
 // ============================================================
-// PENJELASAN DETAIL:
+// HOW TO READ DATA IN A COMPONENT:
 // ============================================================
-// configureStore({ reducer: { ... } })
-// - Fungsi dari Redux Toolkit untuk setup store
-// - Parameter `reducer` berisi SEMUA reducer dari slice
+// import { useSelector } from 'react-redux';
 //
-// transactions: transactionReducer
-// - Key "transactions" = nama untuk akses di useSelector
-// - Value transactionReducer = reducer dari transactionSlice
+// const transactions = useSelector((state) => state.transactions.items);
+// const categories   = useSelector((state) => state.categories.items);
 //
-// CARA AKSES DI COMPONENT:
-// const data = useSelector((state) => state.transactions.items);
-//                                            ↑
-//                                   Nama key yang didaftarkan disini
+// The key ("transactions", "categories") must match the keys above.
 // ============================================================
-
-// 📚 BACA REDUX_GUIDE.md UNTUK PENJELASAN LENGKAP!
